@@ -1,0 +1,6 @@
+framework module ZegoDocsView {
+  umbrella header "ZegoDocsView.h"
+
+  export *
+  module * { export * }
+}

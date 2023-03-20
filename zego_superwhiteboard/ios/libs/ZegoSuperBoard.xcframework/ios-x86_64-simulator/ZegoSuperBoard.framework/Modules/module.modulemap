@@ -1,0 +1,6 @@
+framework module ZegoSuperBoard {
+  umbrella header "ZegoSuperBoard.h"
+
+  export *
+  module * { export * }
+}

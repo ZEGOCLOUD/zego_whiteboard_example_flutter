@@ -1,0 +1,6 @@
+framework module ZegoWhiteboardView {
+  umbrella header "ZegoWhiteboardView.h"
+
+  export *
+  module * { export * }
+}

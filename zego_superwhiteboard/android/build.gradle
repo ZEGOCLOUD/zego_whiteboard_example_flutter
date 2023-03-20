@@ -1,0 +1,50 @@
+group 'com.zego.zego_superwhiteboard'
+version '1.0'
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.1.2'
+//        compileOnly 'im.zego:express-private:3.3.0.27508'
+    }
+}
+
+rootProject.allprojects {
+    repositories {
+        maven { url 'https://storage.zego.im/maven' }
+        google()
+        mavenCentral()
+    }
+}
+
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 31
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    defaultConfig {
+        minSdkVersion 16
+    }
+    sourceSets { main { jniLibs.srcDirs = ['libs'] } }
+}
+
+dependencies {
+    // for other module visit
+//    api fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+    compileOnly fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+    compileOnly 'im.zego:express-private:3.3.0.27508'
+
+//    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+//    implementation files('/Users/yoer/workspace/sources/flutter/bin/cache/artifacts/engine/android-arm64-release/flutter.jar')
+}
+
+
