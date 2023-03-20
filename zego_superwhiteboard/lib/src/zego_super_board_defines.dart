@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:typed_data';
 
-import 'package:zego_superwhiteboard/src/zego_super_board_enum_extension.dart';
+import 'zego_super_board_enum_extension.dart';
 
 class ZegoSuperBoardInitConfig {
   int appID;

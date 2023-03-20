@@ -35,7 +35,7 @@ class WhiteboardWidgetState extends State<WhiteboardWidget>
     whiteboardListsNotifier.value = subViewModelList;
 
     ZegoSuperBoardEngine.instance
-        .getSuperBoardSubViewModelList()
+        .querySuperBoardSubViewList()
         .then((result) {
       whiteboardListsNotifier.value = result.subViewModelList;
     });

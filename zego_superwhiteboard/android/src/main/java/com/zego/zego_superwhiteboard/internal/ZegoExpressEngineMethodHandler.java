@@ -79,8 +79,10 @@ public class ZegoExpressEngineMethodHandler {
 
         // Set eventSink for ZegoExpressEngineEventHaZegoSuperwhiteboardPluginndler
         if (sink == null) {
+
         }
         ZegoExpressEngineEventHandler.getInstance().sink = sink;
+        ZegoSuperBoardManager.getInstance().setManagerListener(ZegoExpressEngineEventHandler.getInstance().managerListener);
 
         HashMap<String, Object> configMap = call.argument("config");
         long appID = ZegoUtils.longValue((Number) configMap.get("appID"));

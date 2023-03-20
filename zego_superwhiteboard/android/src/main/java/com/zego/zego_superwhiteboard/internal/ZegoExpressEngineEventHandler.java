@@ -25,6 +25,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Size;
 
+import androidx.annotation.NonNull;
+
 import im.zego.superboard.callback.IZegoSuperBoardApiCalledCallback;
 import im.zego.superboard.callback.IZegoSuperBoardCacheFileListener;
 import im.zego.superboard.callback.IZegoSuperBoardCreateCallback;
@@ -148,7 +150,6 @@ public class ZegoExpressEngineEventHandler {
 //    IZegoSuperBoardDestroyCallback destroyCallback = new IZegoSuperBoardDestroyCallback() {
 //        @Override
 //        public void onViewDestroyed(int errorCode) {
-//
 //            if (guardSink()) {
 //                return;
 //            }
@@ -165,7 +166,6 @@ public class ZegoExpressEngineEventHandler {
     IZegoSuperBoardSwitchCallback switchCallback = new IZegoSuperBoardSwitchCallback() {
         @Override
         public void onViewSwitched(int errorCode) {
-
             if (guardSink()) {
                 return;
             }
@@ -214,6 +214,93 @@ public class ZegoExpressEngineEventHandler {
             sink.success(map);
         }
     };
+
+    IZegoSuperBoardManagerListener managerListener = new IZegoSuperBoardManagerListener() {
+        @Override
+        public void onError(int errorCode) {
+            if (guardSink()) {
+                return;
+            }
+
+            HashMap<String, Object> map = new HashMap<>();
+
+            map.put("method", "onError");
+            map.put("errorCode", errorCode);
+
+            sink.success(map);
+        }
+
+        @Override
+        public void onRemoteSuperBoardSubViewAdded(@NonNull ZegoSuperBoardSubViewModel subViewModel) {
+            if (guardSink()) {
+                return;
+            }
+
+            HashMap<String, Object> map = new HashMap<>();
+
+            map.put("method", "onRemoteSuperBoardSubViewAdded");
+            map.put("subViewModel", ZegoUtils.mapFromSubViewModel(subViewModel));
+
+            sink.success(map);
+        }
+
+        @Override
+        public void onRemoteSuperBoardSubViewRemoved(@NonNull ZegoSuperBoardSubViewModel subViewModel) {
+            if (guardSink()) {
+                return;
+            }
+
+            HashMap<String, Object> map = new HashMap<>();
+
+            map.put("method", "onRemoteSuperBoardSubViewRemoved");
+            map.put("subViewModel", ZegoUtils.mapFromSubViewModel(subViewModel));
+
+            sink.success(map);
+        }
+
+        @Override
+        public void onRemoteSuperBoardSubViewSwitched(@NonNull String uniqueID) {
+            if (guardSink()) {
+                return;
+            }
+
+            HashMap<String, Object> map = new HashMap<>();
+
+            map.put("method", "onRemoteSuperBoardSubViewSwitched");
+            map.put("uniqueID", uniqueID);
+
+            sink.success(map);
+        }
+
+        @Override
+        public void onRemoteSuperBoardAuthChanged(@NonNull HashMap<String, Integer> authInfo) {
+            if (guardSink()) {
+                return;
+            }
+
+            HashMap<String, Object> map = new HashMap<>();
+
+            map.put("method", "onRemoteSuperBoardAuthChanged");
+            map.put("authInfo", authInfo);
+
+            sink.success(map);
+        }
+
+        @Override
+        public void onRemoteSuperBoardGraphicAuthChanged(@NonNull HashMap<String, Integer> authInfo) {
+            if (guardSink()) {
+                return;
+            }
+
+            HashMap<String, Object> map = new HashMap<>();
+
+            map.put("method", "onRemoteSuperBoardGraphicAuthChanged");
+            map.put("authInfo", authInfo);
+
+            sink.success(map);
+        }
+    };
+
 
     private HashMap<String, Object> mapFromSize(Size size) {
         HashMap<String, Object> subViewModelMap = new HashMap<>();

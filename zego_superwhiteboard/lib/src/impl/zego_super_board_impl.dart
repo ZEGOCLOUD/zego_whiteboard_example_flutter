@@ -215,7 +215,8 @@ class ZegoSuperBoardImpl {
         await _channel.invokeMethod('getSuperBoardSubViewModelList');
     return ZegoSuperBoardGetListResult(
       subViewModelList: result.map((subViewModel) {
-        return ZegoSuperBoardSubViewModel.fromMap(subViewModel as Map<dynamic, dynamic>);
+        return ZegoSuperBoardSubViewModel.fromMap(
+            subViewModel as Map<dynamic, dynamic>);
       }).toList(),
     );
   }
@@ -309,12 +310,37 @@ class ZegoSuperBoardImpl {
   static void _eventListener(dynamic data) {
     final Map<dynamic, dynamic> map = data;
     switch (map['method']) {
-      // case 'onDebugError':
-      //   if (ZegoSuperBoardEngine.onDebugError == null) return;
-      //
-      //   ZegoSuperBoardEngine.onDebugError!(
-      //       map['errorCode'], map['funcName'], map['info']);
-      //   break;
+      case 'onDebugError':
+        if (ZegoSuperBoardEngine.onError == null) return;
+        ZegoSuperBoardEngine.onError!(map['errorCode']);
+        break;
+      case 'onRemoteSuperBoardSubViewAdded':
+        if (ZegoSuperBoardEngine.onRemoteSuperBoardSubViewAdded == null) return;
+        ZegoSuperBoardEngine
+            .onRemoteSuperBoardSubViewAdded!(map['subViewModel']);
+        break;
+      case 'onRemoteSuperBoardSubViewRemoved':
+        if (ZegoSuperBoardEngine.onRemoteSuperBoardSubViewRemoved == null)
+          return;
+        ZegoSuperBoardEngine
+            .onRemoteSuperBoardSubViewRemoved!(map['subViewModel']);
+        break;
+      case 'onRemoteSuperBoardSubViewSwitched':
+        if (ZegoSuperBoardEngine.onRemoteSuperBoardSubViewSwitched == null)
+          return;
+        ZegoSuperBoardEngine
+            .onRemoteSuperBoardSubViewSwitched!(map['uniqueID']);
+        break;
+      case 'onRemoteSuperBoardAuthChanged':
+        if (ZegoSuperBoardEngine.onRemoteSuperBoardAuthChanged == null) return;
+        ZegoSuperBoardEngine.onRemoteSuperBoardAuthChanged!(map['authInfo']);
+        break;
+      case 'onRemoteSuperBoardGraphicAuthChanged':
+        if (ZegoSuperBoardEngine.onRemoteSuperBoardGraphicAuthChanged == null)
+          return;
+        ZegoSuperBoardEngine
+            .onRemoteSuperBoardGraphicAuthChanged!(map['authInfo']);
+        break;
       default:
         // TODO: Unknown callback
         break;
