@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:typed_data';
 
+import 'package:zego_superwhiteboard/src/zego_super_board_enum_extension.dart';
+
 class ZegoSuperBoardInitConfig {
   int appID;
   String userID;
@@ -84,9 +86,13 @@ class ZegoSuperBoardSubViewModel {
     model.name = params['name'] ?? '';
     model.createTime = params['createTime'] ?? 0;
     model.fileID = params['fileID'] ?? '';
-    model.fileType = params['fileType'] ?? ZegoSuperBoardFileType.unknown;
+    model.fileType =
+        ZegoSuperBoardFileTypeExtension.valueMap[params['fileType'] as int] ??
+            ZegoSuperBoardFileType.unknown;
     model.uniqueID = params['uniqueID'] ?? '';
-    model.whiteboardIDList = params['whiteboardIDList'] ?? [];
+    model.whiteboardIDList = (params['whiteboardIDList'] as List<dynamic>)
+        .map((e) => e as String)
+        .toList();
     return model;
   }
 }

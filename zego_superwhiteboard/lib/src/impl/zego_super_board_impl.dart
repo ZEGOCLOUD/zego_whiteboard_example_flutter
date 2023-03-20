@@ -145,13 +145,13 @@ class ZegoSuperBoardImpl {
     return ZegoSuperBoardCreateWhiteboardViewResult(
       errorCode: result['errorCode'],
       subViewModel: ZegoSuperBoardSubViewModel.fromMap(
-          result['subViewModel'] as Map<String, dynamic>),
+          result['subViewModel'] as Map<dynamic, dynamic>),
     );
   }
 
   static Future<ZegoSuperBoardCreateFileViewResult> createFileView(
       ZegoCreateFileConfig config) async {
-    final Map<String, dynamic> result =
+    final Map<dynamic, dynamic> result =
         await _channel.invokeMethod('createFileView', {
       'config': {
         'fileID': config.fileID,
@@ -211,11 +211,11 @@ class ZegoSuperBoardImpl {
 
   static Future<ZegoSuperBoardGetListResult>
       getSuperBoardSubViewModelList() async {
-    final List<Map<dynamic, dynamic>> result =
+    final List<dynamic> result =
         await _channel.invokeMethod('getSuperBoardSubViewModelList');
     return ZegoSuperBoardGetListResult(
       subViewModelList: result.map((subViewModel) {
-        return ZegoSuperBoardSubViewModel.fromMap(subViewModel);
+        return ZegoSuperBoardSubViewModel.fromMap(subViewModel as Map<dynamic, dynamic>);
       }).toList(),
     );
   }
