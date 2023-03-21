@@ -278,6 +278,19 @@ class WhiteboardWidgetState extends State<WhiteboardWidget>
   }
 
   void onBlankWBPressed(double whiteboardWidth, double whiteboardHeight) {
+    final existedBlankWhiteboardList = whiteboardListsNotifier.value
+        .where((element) => element.fileType == ZegoSuperBoardFileType.unknown)
+        .toList();
+    if (existedBlankWhiteboardList.isNotEmpty) {
+      /// blank whiteboard is exist, not create anymore, switch
+      currentModelNotifier.value = existedBlankWhiteboardList.first;
+      ZegoSuperBoardEngine.instance.switchSuperBoardSubView(
+        currentModelNotifier.value!.uniqueID,
+      );
+
+      return;
+    }
+
     if (isWhiteboardCreatingNotifier.value) {
       return;
     }
@@ -304,6 +317,21 @@ class WhiteboardWidgetState extends State<WhiteboardWidget>
   }
 
   void onFileWBPressed(double width, double height) {
+    const targetFileID = 'ppEoHhuIKVP7WYoK';
+
+    final existedWhiteboardList = whiteboardListsNotifier.value
+        .where((element) => element.fileID == targetFileID)
+        .toList();
+    if (existedWhiteboardList.isNotEmpty) {
+      /// target file id is exist, not create anymore, switch
+      currentModelNotifier.value = existedWhiteboardList.first;
+      ZegoSuperBoardEngine.instance.switchSuperBoardSubView(
+        currentModelNotifier.value!.uniqueID,
+      );
+
+      return;
+    }
+
     if (isWhiteboardCreatingNotifier.value) {
       return;
     }
