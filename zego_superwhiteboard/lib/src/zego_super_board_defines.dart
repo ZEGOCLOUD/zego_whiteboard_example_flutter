@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:typed_data';
 
+import '../zego_superwhiteboard.dart';
 import 'zego_super_board_enum_extension.dart';
 
 class ZegoSuperBoardInitConfig {
@@ -72,6 +73,10 @@ class ZegoSuperBoardSubViewModel {
   String uniqueID;
   List<String> whiteboardIDList;
 
+  /// biz extension
+  ValueNotifier<int> currentPageNotifier = ValueNotifier<int>(0);
+  ValueNotifier<int> pageCountNotifier = ValueNotifier<int>(0);
+
   ZegoSuperBoardSubViewModel({
     this.name = '',
     this.createTime = 0,
@@ -94,6 +99,35 @@ class ZegoSuperBoardSubViewModel {
         .map((e) => e as String)
         .toList();
     return model;
+  }
+
+  /// biz extension
+  void syncCurrentPage() {
+    debugPrint("syncCurrentPage $name ${DateTime.now().toString()}");
+    ZegoSuperBoardEngine.instance.getCurrentPage().then((value) {
+      currentPageNotifier.value = value;
+      debugPrint("syncCurrentPage $name $value ${DateTime.now().toString()}");
+    });
+  }
+
+  void syncPageCount() {
+    debugPrint("syncPageCount $name ${DateTime.now().toString()}");
+    ZegoSuperBoardEngine.instance.getPageCount().then((value) {
+      pageCountNotifier.value = value;
+      debugPrint("syncPageCount $name $value ${DateTime.now().toString()}");
+    });
+  }
+
+  void flipToPrePage() {
+    ZegoSuperBoardEngine.instance.flipToPrePage().then((value) {
+      syncCurrentPage();
+    });
+  }
+
+  void flipToNextPage() {
+    ZegoSuperBoardEngine.instance.flipToNextPage().then((value) {
+      syncCurrentPage();
+    });
   }
 }
 

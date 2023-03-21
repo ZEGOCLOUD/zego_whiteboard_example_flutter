@@ -189,26 +189,6 @@ class ZegoSuperBoardImpl {
     );
   }
 
-  //
-  // @SuppressWarnings("unused")
-  // public static
-  //
-  // void getSuperBoardView(MethodCall call, Result result) {
-  //   ZegoSuperBoardManager.getInstance().getSuperBoardView();
-  //
-  //   result.success(null);
-  // }
-  //
-  // @SuppressWarnings("unused")
-  // public static
-  //
-  // void getSuperBoardSubView(MethodCall call, Result result) {
-  //   String uniqueID = call.argument("uniqueID");
-  //   ZegoSuperBoardManager.getInstance().getSuperBoardSubView(uniqueID);
-  //
-  //   result.success(null);
-  // }
-
   static Future<ZegoSuperBoardGetListResult>
       getSuperBoardSubViewModelList() async {
     final List<dynamic> result =
@@ -315,8 +295,101 @@ class ZegoSuperBoardImpl {
     return result['errorCode'];
   }
 
-  /* EventHandler */
+  /// subview
+  static Future<List<dynamic>> getThumbnailUrlList() async {
+    return await _channel.invokeMethod('getThumbnailUrlList');
+  }
 
+  static Future<Map<dynamic, dynamic>> getModel() async {
+    return await _channel.invokeMethod('getModel');
+  }
+
+  static Future<int> inputText() async {
+    final Map<dynamic, dynamic> result =
+        await _channel.invokeMethod('inputText');
+
+    return result['errorCode'];
+  }
+
+  static Future<int> addText(String text, int positionX, int positionY) async {
+    final Map<dynamic, dynamic> result =
+        await _channel.invokeMethod('addText', {
+      'text': text,
+      'positionX': positionX,
+      'positionY': positionY,
+    });
+    return result['errorCode'];
+  }
+
+  static Future<void> undo() async {
+    await _channel.invokeMethod('undo');
+  }
+
+  static Future<void> redo() async {
+    await _channel.invokeMethod('redo');
+  }
+
+  static Future<void> clearCurrentPage() async {
+    await _channel.invokeMethod('clearCurrentPage');
+  }
+
+  static Future<void> clearAllPage() async {
+    await _channel.invokeMethod('clearAllPage');
+  }
+
+  static Future<void> setOperationMode(int mode) async {
+    await _channel.invokeMethod('setOperationMode', {
+      'mode': mode,
+    });
+  }
+
+  static Future<int> flipToPage(int targetPage) async {
+    final Map<dynamic, dynamic> result =
+        await _channel.invokeMethod('flipToPage', {
+      'targetPage': targetPage,
+    });
+    return result['errorCode'];
+  }
+
+  static Future<int> flipToPrePage() async {
+    final Map<dynamic, dynamic> result =
+        await _channel.invokeMethod('flipToPrePage');
+    return result['errorCode'];
+  }
+
+  static Future<int> flipToNextPage() async {
+    final Map<dynamic, dynamic> result =
+        await _channel.invokeMethod('flipToNextPage');
+    return result['errorCode'];
+  }
+
+  static Future<int> getCurrentPage() async {
+    return await _channel.invokeMethod('getCurrentPage');
+  }
+
+  static Future<int> getPageCount() async {
+    return await _channel.invokeMethod('getPageCount');
+  }
+
+  static Future<Map<dynamic, dynamic>> getVisibleSize() async {
+    return await _channel.invokeMethod('getVisibleSize');
+  }
+
+  static Future<int> clearSelected() async {
+    final Map<dynamic, dynamic> result =
+        await _channel.invokeMethod('clearSelected');
+    return result['errorCode'];
+  }
+
+  static Future<int> setWhiteboardBackgroundColor(int color) async {
+    final Map<dynamic, dynamic> result =
+        await _channel.invokeMethod('setWhiteboardBackgroundColor', {
+      'color': color,
+    });
+    return result['errorCode'];
+  }
+
+  /// EventHandler
   static void _registerEventHandler() async {
     _streamSubscription =
         _event.receiveBroadcastStream().listen(_eventListener);

@@ -15,6 +15,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
@@ -30,6 +32,7 @@ import java.util.List;
 import java.util.Locale;
 
 
+import im.zego.superboard.callback.IZegoSuperBoardApiCalledCallback;
 import im.zego.superboard.callback.IZegoSuperBoardCreateCallback;
 import im.zego.superboard.callback.IZegoSuperBoardDestroyCallback;
 import im.zego.superboard.callback.IZegoSuperBoardInitCallback;
@@ -404,6 +407,160 @@ public class ZegoExpressEngineMethodHandler {
     public static void getBrushColor(MethodCall call, Result result) {
         result.success(ZegoSuperBoardManager.getInstance().getBrushColor());
     }
+
+    /////   ZegoSuperBoardSubView
+    public static void getThumbnailUrlList(MethodCall call, Result result) {
+        result.success(ZegoSuperBoardManager.getInstance().getSuperBoardView().getCurrentSuperBoardSubView().getThumbnailUrlList());
+    }
+
+    public static void getModel(MethodCall call, Result result) {
+        result.success(ZegoUtils.mapFromSubViewModel(ZegoSuperBoardManager.getInstance().getSuperBoardView().getCurrentSuperBoardSubView().getModel()));
+    }
+
+    public static void inputText(MethodCall call, Result result) {
+        ZegoSuperBoardManager.getInstance().getSuperBoardView().getCurrentSuperBoardSubView().inputText(
+                new IZegoSuperBoardApiCalledCallback() {
+                    @Override
+                    public void onApiCalledResult(int errorCode) {
+                        HashMap<String, Object> map = new HashMap<>();
+                        map.put("errorCode", errorCode);
+                        result.success(map);
+                    }
+                }
+        );
+    }
+
+    public static void addText(MethodCall call, Result result) {
+        ZegoSuperBoardManager.getInstance().getSuperBoardView().getCurrentSuperBoardSubView().addText(
+                call.argument("text"),
+                ZegoUtils.intValue((Number) call.argument("positionX")),
+                ZegoUtils.intValue((Number) call.argument("positionY")),
+                new IZegoSuperBoardApiCalledCallback() {
+                    @Override
+                    public void onApiCalledResult(int errorCode) {
+                        HashMap<String, Object> map = new HashMap<>();
+                        map.put("errorCode", errorCode);
+                        result.success(map);
+                    }
+                }
+        );
+    }
+
+    public static void undo(MethodCall call, Result result) {
+        ZegoSuperBoardManager.getInstance().getSuperBoardView().getCurrentSuperBoardSubView().undo();
+        result.success(null);
+    }
+
+    public static void redo(MethodCall call, Result result) {
+        ZegoSuperBoardManager.getInstance().getSuperBoardView().getCurrentSuperBoardSubView().redo();
+        result.success(null);
+    }
+
+    public static void clearCurrentPage(MethodCall call, Result result) {
+        ZegoSuperBoardManager.getInstance().getSuperBoardView().getCurrentSuperBoardSubView().clearCurrentPage(
+                new IZegoSuperBoardApiCalledCallback() {
+                    @Override
+                    public void onApiCalledResult(int errorCode) {
+                        HashMap<String, Object> map = new HashMap<>();
+                        map.put("errorCode", errorCode);
+                        result.success(map);
+                    }
+                }
+        );
+    }
+
+    public static void clearAllPage(MethodCall call, Result result) {
+        ZegoSuperBoardManager.getInstance().getSuperBoardView().getCurrentSuperBoardSubView().clearAllPage(
+                new IZegoSuperBoardApiCalledCallback() {
+                    @Override
+                    public void onApiCalledResult(int errorCode) {
+                        HashMap<String, Object> map = new HashMap<>();
+                        map.put("errorCode", errorCode);
+                        result.success(map);
+                    }
+                }
+        );
+    }
+
+    public static void setOperationMode(MethodCall call, Result result) {
+        ZegoSuperBoardManager.getInstance().getSuperBoardView().getCurrentSuperBoardSubView().setOperationMode(
+                ZegoUtils.intValue((Number) call.argument("mode"))
+        );
+        result.success(null);
+    }
+
+    public static void flipToPage(MethodCall call, Result result) {
+        ZegoSuperBoardManager.getInstance().getSuperBoardView().getCurrentSuperBoardSubView().flipToPage(
+                ZegoUtils.intValue((Number) call.argument("targetPage")),
+                new IZegoSuperBoardApiCalledCallback() {
+                    @Override
+                    public void onApiCalledResult(int errorCode) {
+                        HashMap<String, Object> map = new HashMap<>();
+                        map.put("errorCode", errorCode);
+                        result.success(map);
+                    }
+                }
+        );
+    }
+
+    public static void flipToPrePage(MethodCall call, Result result) {
+        ZegoSuperBoardManager.getInstance().getSuperBoardView().getCurrentSuperBoardSubView().flipToPrePage(
+                new IZegoSuperBoardApiCalledCallback() {
+                    @Override
+                    public void onApiCalledResult(int errorCode) {
+                        HashMap<String, Object> map = new HashMap<>();
+                        map.put("errorCode", errorCode);
+                        result.success(map);
+                    }
+                }
+        );
+    }
+
+    public static void flipToNextPage(MethodCall call, Result result) {
+        ZegoSuperBoardManager.getInstance().getSuperBoardView().getCurrentSuperBoardSubView().flipToNextPage(
+                new IZegoSuperBoardApiCalledCallback() {
+                    @Override
+                    public void onApiCalledResult(int errorCode) {
+                        HashMap<String, Object> map = new HashMap<>();
+                        map.put("errorCode", errorCode);
+                        result.success(map);
+                    }
+                }
+        );
+    }
+
+    public static void getCurrentPage(MethodCall call, Result result) {
+        result.success(ZegoSuperBoardManager.getInstance().getSuperBoardView().getCurrentSuperBoardSubView().getCurrentPage());
+    }
+
+    public static void getPageCount(MethodCall call, Result result) {
+        result.success(ZegoSuperBoardManager.getInstance().getSuperBoardView().getCurrentSuperBoardSubView().getPageCount());
+    }
+
+    public static void getVisibleSize(MethodCall call, Result result) {
+        result.success(ZegoUtils.mapFromSize(ZegoSuperBoardManager.getInstance().getSuperBoardView().getCurrentSuperBoardSubView().getVisibleSize()));
+    }
+
+    public static void clearSelected(MethodCall call, Result result) {
+        ZegoSuperBoardManager.getInstance().getSuperBoardView().getCurrentSuperBoardSubView().clearSelected(
+                new IZegoSuperBoardApiCalledCallback() {
+                    @Override
+                    public void onApiCalledResult(int errorCode) {
+                        HashMap<String, Object> map = new HashMap<>();
+                        map.put("errorCode", errorCode);
+                        result.success(map);
+                    }
+                }
+        );
+    }
+
+    public static void setWhiteboardBackgroundColor(MethodCall call, Result result) {
+        ZegoSuperBoardManager.getInstance().getSuperBoardView().getCurrentSuperBoardSubView().setWhiteboardBackgroundColor(
+                ZegoUtils.intValue((Number) call.argument("color"))
+        );
+    }
+
+    ////////
 
     public static ZegoSuperBoardTool getSuperBoardTool(int value) {
         try {

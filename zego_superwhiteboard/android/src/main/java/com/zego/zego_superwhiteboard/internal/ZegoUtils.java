@@ -1,5 +1,7 @@
 package com.zego.zego_superwhiteboard.internal;
 
+import android.util.Size;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -78,4 +80,12 @@ public class ZegoUtils {
         }
         return arrayList;
     }
+
+    public static HashMap<String, Object> mapFromSize(Size size) {
+        HashMap<String, Object> subViewModelMap = new HashMap<>();
+        subViewModelMap.put("width", size.getWidth());
+        subViewModelMap.put("height", size.getHeight());
+        return subViewModelMap;
+    }
+
 }

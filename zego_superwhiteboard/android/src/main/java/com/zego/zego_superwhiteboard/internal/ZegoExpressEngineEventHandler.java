@@ -132,7 +132,7 @@ public class ZegoExpressEngineEventHandler {
             HashMap<String, Object> map = new HashMap<>();
 
             map.put("method", "onSizeChange");
-            map.put("visibleSize", mapFromSize(visibleSize));
+            map.put("visibleSize", ZegoUtils.mapFromSize(visibleSize));
             map.put("subViewModel", ZegoUtils.mapFromSubViewModel(subViewModel));
 
             sink.success(map);
@@ -225,12 +225,5 @@ public class ZegoExpressEngineEventHandler {
         }
     };
 
-
-    private HashMap<String, Object> mapFromSize(Size size) {
-        HashMap<String, Object> subViewModelMap = new HashMap<>();
-        subViewModelMap.put("width", size.getWidth());
-        subViewModelMap.put("height", size.getHeight());
-        return subViewModelMap;
-    }
 
 }
