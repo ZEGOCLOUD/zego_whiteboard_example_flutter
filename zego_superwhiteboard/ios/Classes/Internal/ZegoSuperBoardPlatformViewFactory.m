@@ -6,21 +6,21 @@
 //  Copyright © 2020 Zego. All rights reserved.
 //
 
-#import "ZegoPlatformViewFactory.h"
+#import "ZegoSuperBoardPlatformViewFactory.h"
 
-@interface ZegoPlatformViewFactory()
+@interface ZegoSuperBoardPlatformViewFactory()
 
-@property (nonatomic, strong) NSMutableDictionary<NSNumber*, ZegoPlatformView*> *platformViewMap;
+@property (nonatomic, strong) NSMutableDictionary<NSNumber*, ZegoSuperBoardPlatformView*> *platformViewMap;
 
 @end
 
-@implementation ZegoPlatformViewFactory
+@implementation ZegoSuperBoardPlatformViewFactory
 
 + (instancetype)sharedInstance {
-    static ZegoPlatformViewFactory *instance = nil;
+    static ZegoSuperBoardPlatformViewFactory *instance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        instance = [[ZegoPlatformViewFactory alloc] init];
+        instance = [[ZegoSuperBoardPlatformViewFactory alloc] init];
     });
     return instance;
 }
@@ -35,7 +35,7 @@
 
 - (BOOL)destroyPlatformView:(NSNumber *)viewID {
 
-    ZegoPlatformView *platformView = self.platformViewMap[viewID];
+    ZegoSuperBoardPlatformView *platformView = self.platformViewMap[viewID];
 
     if (!platformView) {
         [self logCurrentPlatformViews];
@@ -49,14 +49,14 @@
     return YES;
 }
 
-- (nullable ZegoPlatformView *)getPlatformView:(NSNumber *)viewID {
+- (nullable ZegoSuperBoardPlatformView *)getPlatformView:(NSNumber *)viewID {
 
     [self logCurrentPlatformViews];
     
     return [self.platformViewMap objectForKey:viewID];
 }
 
-- (void)addPlatformView:(ZegoPlatformView *)view viewID:(NSNumber *)viewID {
+- (void)addPlatformView:(ZegoSuperBoardPlatformView *)view viewID:(NSNumber *)viewID {
 
     [self.platformViewMap setObject:view forKey:viewID];
 
@@ -66,7 +66,7 @@
 - (void)logCurrentPlatformViews {
     NSMutableString *desc = [[NSMutableString alloc] init];
     for (NSNumber *i in self.platformViewMap) {
-        ZegoPlatformView *eachPlatformView = self.platformViewMap[i];
+        ZegoSuperBoardPlatformView *eachPlatformView = self.platformViewMap[i];
         if (eachPlatformView) {
             [desc appendFormat:@"[ID:%d|View:%p] ", i.intValue, eachPlatformView.view];
         }
@@ -81,7 +81,7 @@
                                    viewIdentifier:(int64_t)viewId
                                         arguments:(id _Nullable)args {
     
-    ZegoPlatformView *view = [[ZegoPlatformView alloc] initWithRect:frame viewID:viewId];
+    ZegoSuperBoardPlatformView *view = [[ZegoSuperBoardPlatformView alloc] initWithRect:frame viewID:viewId];
     [self addPlatformView:view viewID:@(viewId)];
     
     return view;

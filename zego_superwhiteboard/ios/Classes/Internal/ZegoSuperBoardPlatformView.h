@@ -22,7 +22,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 #if TARGET_OS_IPHONE
-@interface ZegoPlatformView : NSObject<FlutterPlatformView>
+@interface ZegoSuperBoardPlatformView : NSObject<FlutterPlatformView>
 #elif TARGET_OS_OSX
 @interface ZegoPlatformView : NSObject
 #endif

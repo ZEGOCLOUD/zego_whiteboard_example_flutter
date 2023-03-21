@@ -6,16 +6,16 @@
 //  Copyright © 2020 Zego. All rights reserved.
 //
 
-#import "ZegoPlatformView.h"
+#import "ZegoSuperBoardPlatformView.h"
 
-@interface ZegoPlatformView()
+@interface ZegoSuperBoardPlatformView()
 
 @property (nonatomic, strong, readwrite) ZegoSuperBoardView *view;
 @property (nonatomic, assign) int64_t viewID;
 
 @end
 
-@implementation ZegoPlatformView
+@implementation ZegoSuperBoardPlatformView
 
 - (instancetype)initWithRect:(CGRect)rect viewID:(int64_t)viewID {
     self = [super init];

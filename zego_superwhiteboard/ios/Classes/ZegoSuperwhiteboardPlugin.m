@@ -1,6 +1,6 @@
 #import "ZegoSuperwhiteboardPlugin.h"
-#import "ZegoExpressEngineMethodHandler.h"
-#import "ZegoPlatformViewFactory.h"
+#import <zego_superwhiteboard/ZegoSuperBoardEngineMethodHandler.h>
+#import <zego_superwhiteboard/ZegoSuperBoardPlatformViewFactory.h>
 
 @interface ZegoSuperwhiteboardPlugin ()<FlutterStreamHandler>
 
@@ -19,7 +19,7 @@
     instance.registrar = registrar;
     
     FlutterMethodChannel* channel = [FlutterMethodChannel
-      methodChannelWithName:@"plugins.zego.im/zego_superboard_engine"
+      methodChannelWithName:@"plugins.zego.im/zego_superboard"
             binaryMessenger:[registrar messenger]];
     instance.methodChannel = channel;
     [registrar addMethodCallDelegate:instance channel:channel];
@@ -30,7 +30,7 @@
     instance.eventChannel = eventChannel;
     
     // Register platform view factory
-    [registrar registerViewFactory:[ZegoPlatformViewFactory sharedInstance] withId:@"plugins.zego.im/zego_superboard_view"];
+    [registrar registerViewFactory:[ZegoSuperBoardPlatformViewFactory sharedInstance] withId:@"plugins.zego.im/zego_superboard_view"];
     
     
     
@@ -51,9 +51,9 @@
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
     NSString *method = call.method;
     if ([method isEqualToString:@"init"]) {
-        [[ZegoExpressEngineMethodHandler sharedInstance]setRegistrar:_registrar eventSink:_eventSink];
+        [[ZegoSuperBoardEngineMethodHandler sharedInstance]setRegistrar:_registrar eventSink:_eventSink];
     }
-    [[ZegoExpressEngineMethodHandler sharedInstance] handleMethodCall:call result:result];
+    [[ZegoSuperBoardEngineMethodHandler sharedInstance] handleMethodCall:call result:result];
     
     
 //  if ([@"getPlatformVersion" isEqualToString:call.method]) {

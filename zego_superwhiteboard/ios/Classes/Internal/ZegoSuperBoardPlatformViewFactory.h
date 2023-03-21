@@ -16,11 +16,11 @@
 #import <FlutterMacOS/FlutterPlatformViews.h>
 #endif
 
-#import "ZegoPlatformView.h"
+#import "ZegoSuperBoardPlatformView.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ZegoPlatformViewFactory : NSObject<FlutterPlatformViewFactory>
+@interface ZegoSuperBoardPlatformViewFactory : NSObject<FlutterPlatformViewFactory>
 
 + (instancetype)sharedInstance;
 
@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)destroyPlatformView:(NSNumber *)viewID;
 
 /// Get PlatformView to pass to native when dart invoke `startPreview` or `startPlayingStream`
-- (nullable ZegoPlatformView *)getPlatformView:(NSNumber *)viewID;
+- (nullable ZegoSuperBoardPlatformView *)getPlatformView:(NSNumber *)viewID;
 
 @end
 

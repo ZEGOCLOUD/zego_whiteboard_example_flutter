@@ -5,24 +5,24 @@
 //  Created by zego on 2023/3/21.
 //
 
-#import "ZegoExpressEngineMethodHandler.h"
-#import "ZegoExpressEngineEventHandler.h"
+#import "ZegoSuperBoardEngineMethodHandler.h"
+#import "ZegoSuperBoardEngineEventHandler.h"
 #import <ZegoSuperBoard/ZegoSuperBoard.h>
 #import "NSObject+Conversion.h"
 
-@interface ZegoExpressEngineMethodHandler ()
+@interface ZegoSuperBoardEngineMethodHandler ()
 
 @property (nonatomic, strong) id<FlutterPluginRegistrar> registrar;
 
 @end
 
-@implementation ZegoExpressEngineMethodHandler
+@implementation ZegoSuperBoardEngineMethodHandler
 
 + (instancetype)sharedInstance {
-    static ZegoExpressEngineMethodHandler *instance = nil;
+    static ZegoSuperBoardEngineMethodHandler *instance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        instance = [[ZegoExpressEngineMethodHandler alloc] init];
+        instance = [[ZegoSuperBoardEngineMethodHandler alloc] init];
     });
     return instance;
 }
@@ -32,12 +32,12 @@
     SEL selector = NSSelectorFromString([NSString stringWithFormat:@"%@:result:", call.method]);
 
     // Handle unrecognized method
-    if (![ZegoExpressEngineMethodHandler respondsToSelector:selector]) {
+    if (![self respondsToSelector:selector]) {
         result(FlutterMethodNotImplemented);
         return;
     }
 
-    NSMethodSignature *signature = [ZegoExpressEngineMethodHandler methodSignatureForSelector:selector];
+    NSMethodSignature *signature = [self methodSignatureForSelector:selector];
     NSInvocation* invocation = [NSInvocation invocationWithMethodSignature:signature];
 
     invocation.target = self;
@@ -51,27 +51,29 @@
 - (void)setRegistrar:(id<FlutterPluginRegistrar>)registrar eventSink:(FlutterEventSink)sink {
     _registrar = registrar;
     // Set eventSink for ZegoExpressEngineEventHandler
-    [ZegoExpressEngineEventHandler sharedInstance].eventSink = sink;
+    [ZegoSuperBoardEngineEventHandler sharedInstance].eventSink = sink;
 }
 
 
-+ (void)init:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)init:(FlutterMethodCall *)call result:(FlutterResult)result {
     
-    [[ZegoSuperBoardManager sharedInstance]setDelegate:[ZegoExpressEngineEventHandler sharedInstance]];
+    [[ZegoSuperBoardManager sharedInstance]setDelegate:[ZegoSuperBoardEngineEventHandler sharedInstance]];
     
     NSDictionary *arguments = call.arguments;
     NSDictionary *configDic = arguments[@"config"];
     long appID = [configDic[@"appID"]longValue];
     NSString *appSign = configDic[@"appSign"];
-    NSString *token = configDic[@"token"];
+    NSString *token;
+    if (configDic[@"token"]) {
+        token = configDic[@"token"];
+    }
     NSString *userID = configDic[@"userID"];
     
     ZegoSuperBoardInitConfig *config = [ZegoSuperBoardInitConfig new];
     config.appID = appID;
     config.appSign = appSign;
-    config.token = token;
+    //config.token = token;
     config.userID = userID;
-    
     [[ZegoSuperBoardManager sharedInstance]initWithConfig:config complete:^(ZegoSuperBoardError errorCode) {
         NSDictionary *params = @{@"errorCode": @(errorCode)};
         result(params);
@@ -79,61 +81,61 @@
     
 }
 
-+ (void)uninit:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)uninit:(FlutterMethodCall *)call result:(FlutterResult)result {
     [[ZegoSuperBoardManager sharedInstance]unInit];
     result(nil);
 }
 
-+ (void)getSDKVersion:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)getSDKVersion:(FlutterMethodCall *)call result:(FlutterResult)result {
     NSString *version = [[ZegoSuperBoardManager sharedInstance]getSDKVersion];
     result(version);
 }
 
-+ (void)enableRemoteCursorVisible:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)enableRemoteCursorVisible:(FlutterMethodCall *)call result:(FlutterResult)result {
     NSDictionary *arguments = call.arguments;
     BOOL visable = [arguments[@"visable"] boolValue];
     [[ZegoSuperBoardManager sharedInstance]setEnableRemoteCursorVisible:visable];
     result(nil);
 }
 
-+ (void)clear:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)clear:(FlutterMethodCall *)call result:(FlutterResult)result {
     [[ZegoSuperBoardManager sharedInstance]clear];
     result(nil);
 }
 
-+ (void)renewToken:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)renewToken:(FlutterMethodCall *)call result:(FlutterResult)result {
     NSDictionary *arguments = call.arguments;
     NSString *token = arguments[@"token"];
     [[ZegoSuperBoardManager sharedInstance]renewToken:token];
     result(nil);
 }
 
-+ (void)clearCache:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)clearCache:(FlutterMethodCall *)call result:(FlutterResult)result {
     [[ZegoSuperBoardManager sharedInstance]clearCache];
     result(nil);
 }
 
-+ (void)isCustomCursorEnabled:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)isCustomCursorEnabled:(FlutterMethodCall *)call result:(FlutterResult)result {
     BOOL enable = [[ZegoSuperBoardManager sharedInstance]enableCustomCursor];
     result(@(enable));
 }
 
-+ (void)isEnableResponseScale:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)isEnableResponseScale:(FlutterMethodCall *)call result:(FlutterResult)result {
     BOOL enable = [[ZegoSuperBoardManager sharedInstance]enableResponseScale];
     result(@(enable));
 }
 
-+ (void)isEnableSyncScale:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)isEnableSyncScale:(FlutterMethodCall *)call result:(FlutterResult)result {
     BOOL enable = [[ZegoSuperBoardManager sharedInstance]enableSyncScale];
     result(@(enable));
 }
 
-+ (void)isRemoteCursorVisibleEnabled:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)isRemoteCursorVisibleEnabled:(FlutterMethodCall *)call result:(FlutterResult)result {
     BOOL enable = [[ZegoSuperBoardManager sharedInstance]enableRemoteCursorVisible];
     result(@(enable));
 }
 
-+ (void)setCustomizedConfig:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)setCustomizedConfig:(FlutterMethodCall *)call result:(FlutterResult)result {
     NSDictionary *arguments = call.arguments;
     NSString *key = arguments[@"key"];
     NSString *value = arguments[@"value"];
@@ -141,7 +143,7 @@
     result(nil);
 }
 
-+ (void)createWhiteboardView:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)createWhiteboardView:(FlutterMethodCall *)call result:(FlutterResult)result {
     NSDictionary *arguments = call.arguments;
     NSDictionary *configDic = arguments[@"config"];
     
@@ -153,65 +155,60 @@
     
     [[ZegoSuperBoardManager sharedInstance]createWhiteboardView:config complete:^(ZegoSuperBoardError errorCode, ZegoSuperBoardSubViewModel * _Nonnull model) {
         NSDictionary *params = @{@"errorCode": @(errorCode), @"subViewModel": [NSObject dicFromObject:model]};
-        NSError *error;
-        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params options:0 error:&error];
-        NSString *extendedDataJsonString = @"{}";
-        if (jsonData) {
-            extendedDataJsonString = [[NSString alloc]initWithData:jsonData encoding:NSUTF8StringEncoding];
-        }
-        result(extendedDataJsonString);
+        result(params);
     }];
 }
 
-+ (void)createFileView:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)createFileView:(FlutterMethodCall *)call result:(FlutterResult)result {
     NSDictionary *arguments = call.arguments;
     NSDictionary *configDic = arguments[@"config"];
     ZegoCreateFileConfig *config = [ZegoCreateFileConfig new];
     config.fileID = configDic[@"fileID"];
     [[ZegoSuperBoardManager sharedInstance]createFileView:config complete:^(ZegoSuperBoardError errorCode, ZegoSuperBoardSubViewModel * _Nonnull model) {
         NSDictionary *params = @{@"errorCode": @(errorCode), @"subViewModel": [NSObject dicFromObject:model]};
-        NSError *error;
-        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params options:0 error:&error];
-        NSString *extendedDataJsonString = @"{}";
-        if (jsonData) {
-            extendedDataJsonString = [[NSString alloc]initWithData:jsonData encoding:NSUTF8StringEncoding];
-        }
-        result(extendedDataJsonString);
+        result(params);
     }];
 }
 
-+ (void)destroySuperBoardSubView:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)destroySuperBoardSubView:(FlutterMethodCall *)call result:(FlutterResult)result {
     NSDictionary *arguments = call.arguments;
     NSString *uniqueID = arguments[@"uniqueID"];
     [[ZegoSuperBoardManager sharedInstance]destroySuperBoardSubView:uniqueID complete:^(ZegoSuperBoardError errorCode) {
         NSDictionary *params = @{@"errorCode": @(errorCode)};
-        NSError *error;
-        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params options:0 error:&error];
-        NSString *extendedDataJsonString = @"{}";
-        if (jsonData) {
-            extendedDataJsonString = [[NSString alloc]initWithData:jsonData encoding:NSUTF8StringEncoding];
-        }
-        result(extendedDataJsonString);
+        result(params);
     }];
     
 }
 
-+ (void)querySuperBoardSubViewList:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)querySuperBoardSubViewList:(FlutterMethodCall *)call result:(FlutterResult)result {
     [[ZegoSuperBoardManager sharedInstance]querySuperBoardSubViewList:^(ZegoSuperBoardError errorCode, NSArray<ZegoSuperBoardSubViewModel *> * _Nonnull superBoardViewList) {
         NSMutableDictionary *params = [NSMutableDictionary dictionary];
         [params setObject:@(errorCode) forKey:@"errorCode"];
         [params setObject:[NSObject dicFromObject:superBoardViewList] forKey:@"subViewModelList"];
-        NSError *error;
-        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params options:0 error:&error];
-        NSString *extendedDataJsonString = @"{}";
-        if (jsonData) {
-            extendedDataJsonString = [[NSString alloc]initWithData:jsonData encoding:NSUTF8StringEncoding];
-        }
-        result(extendedDataJsonString);
+        result(params);
     }];
 }
 
-+ (void)getSuperBoardSubViewModelList:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)switchSuperBoardSubView:(FlutterMethodCall *)call result:(FlutterResult)result {
+    NSDictionary *arguments = call.arguments;
+    NSString *uniqueID = arguments[@"uniqueID"];
+    [[ZegoSuperBoardManager sharedInstance].superBoardView switchSuperBoardSubView:uniqueID complete:^(ZegoSuperBoardError errorCode) {
+        NSDictionary *params = @{@"errorCode":@(errorCode)};
+        result(params);
+    }];
+}
+
+- (void)switchSuperBoardSubExcelView:(FlutterMethodCall *)call result:(FlutterResult)result {
+    NSDictionary *arguments = call.arguments;
+    NSString *uniqueID = arguments[@"uniqueID"];
+    int index = [arguments[@"sheetIndex"]intValue];
+    [[ZegoSuperBoardManager sharedInstance].superBoardView switcSuperBoardSubView:uniqueID sheetIndex:index complete:^(ZegoSuperBoardError errorCode) {
+        NSDictionary *params = @{@"errorCode":@(errorCode)};
+        result(params);
+    }];
+}
+
+- (void)getSuperBoardSubViewModelList:(FlutterMethodCall *)call result:(FlutterResult)result {
     NSMutableArray *subViewModelListDic = [NSMutableArray array];
     for (ZegoSuperBoardSubViewModel * model in [ZegoSuperBoardManager sharedInstance].superBoardSubViewModelList) {
         [subViewModelListDic addObject:[NSObject dicFromObject:model]];
@@ -219,82 +216,82 @@
     result(subViewModelListDic);
 }
 
-+ (void)enableSyncScale:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)enableSyncScale:(FlutterMethodCall *)call result:(FlutterResult)result {
     NSDictionary *arguments = call.arguments;
     BOOL enable = arguments[@"enable"];
     [[ZegoSuperBoardManager sharedInstance]setEnableSyncScale:enable];
     result(nil);
 }
 
-+ (void)enableResponseScale:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)enableResponseScale:(FlutterMethodCall *)call result:(FlutterResult)result {
     NSDictionary *arguments = call.arguments;
     BOOL enable = arguments[@"enable"];
     [[ZegoSuperBoardManager sharedInstance]setEnableResponseScale:enable];
     result(nil);
 }
 
-+ (void)setToolType:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)setToolType:(FlutterMethodCall *)call result:(FlutterResult)result {
     NSDictionary *arguments = call.arguments;
     ZegoSuperBoardTool tool = [arguments[@"tool"]integerValue];
     [[ZegoSuperBoardManager sharedInstance]setToolType:tool];
     result(nil);
 }
 
-+ (void)getToolType:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)getToolType:(FlutterMethodCall *)call result:(FlutterResult)result {
     ZegoSuperBoardTool tool = [ZegoSuperBoardManager sharedInstance].toolType;
     result(@(tool));
 }
 
-+ (void)setFontBold:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)setFontBold:(FlutterMethodCall *)call result:(FlutterResult)result {
     NSDictionary *arguments = call.arguments;
     BOOL bold = [arguments[@"bold"]boolValue];
     [[ZegoSuperBoardManager sharedInstance]setIsFontBold:bold];
     result(nil);
 }
 
-+ (void)isFontBold:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)isFontBold:(FlutterMethodCall *)call result:(FlutterResult)result {
     BOOL isFontBold = [ZegoSuperBoardManager sharedInstance].isFontBold;
     result(@(isFontBold));
 }
 
-+ (void)isFontItalic:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)isFontItalic:(FlutterMethodCall *)call result:(FlutterResult)result {
     BOOL isFontItalic = [ZegoSuperBoardManager sharedInstance].isFontItalic;
     result(@(isFontItalic));
 }
 
-+ (void)setFontSize:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)setFontSize:(FlutterMethodCall *)call result:(FlutterResult)result {
     NSDictionary *arguments = call.arguments;
     NSUInteger size = [arguments[@"size"]intValue];
     [[ZegoSuperBoardManager sharedInstance]setFontSize:size];
     result(nil);
 }
 
-+ (void)getFontSize:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)getFontSize:(FlutterMethodCall *)call result:(FlutterResult)result {
     NSUInteger size = [ZegoSuperBoardManager sharedInstance].fontSize;
     result(@(size));
 }
 
-+ (void)setBrushSize:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)setBrushSize:(FlutterMethodCall *)call result:(FlutterResult)result {
     NSDictionary *arguments = call.arguments;
     NSInteger width = [arguments[@"width"]intValue];
     [[ZegoSuperBoardManager sharedInstance]setBrushSize:width];
     result(nil);
 }
 
-+ (void)setBrushColor:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)setBrushColor:(FlutterMethodCall *)call result:(FlutterResult)result {
     NSDictionary *arguments = call.arguments;
     NSString *color = arguments[@"color"];
     [[ZegoSuperBoardManager sharedInstance]setBrushColor:[self colorWithHexString:color]];
     result(nil);
 }
 
-+ (void)getBrushColor:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)getBrushColor:(FlutterMethodCall *)call result:(FlutterResult)result {
     UIColor *color = [ZegoSuperBoardManager sharedInstance].brushColor;
     result([self hexadecimalFromUIColor:color]);
 }
 
 
-+ (UIColor *) colorWithHexString: (NSString *)color
+- (UIColor *) colorWithHexString: (NSString *)color
 {
     NSString *cString = [[color stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] uppercaseString];
 
@@ -337,7 +334,7 @@
 }
 
 
-+ (NSString *)hexadecimalFromUIColor:(UIColor*)color {
+- (NSString *)hexadecimalFromUIColor:(UIColor*)color {
     const CGFloat *components = CGColorGetComponents(color.CGColor);
     CGFloat r = components[0];
     CGFloat g = components[1];

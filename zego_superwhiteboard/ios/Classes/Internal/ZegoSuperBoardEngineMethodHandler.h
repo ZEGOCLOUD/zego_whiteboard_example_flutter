@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ZegoExpressEngineMethodHandler : NSObject
+@interface ZegoSuperBoardEngineMethodHandler : NSObject
 
 + (instancetype)sharedInstance;
 
