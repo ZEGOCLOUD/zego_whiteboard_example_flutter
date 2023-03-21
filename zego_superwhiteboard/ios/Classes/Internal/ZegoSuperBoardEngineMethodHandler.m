@@ -182,9 +182,14 @@
 
 - (void)querySuperBoardSubViewList:(FlutterMethodCall *)call result:(FlutterResult)result {
     [[ZegoSuperBoardManager sharedInstance]querySuperBoardSubViewList:^(ZegoSuperBoardError errorCode, NSArray<ZegoSuperBoardSubViewModel *> * _Nonnull superBoardViewList) {
+        NSMutableArray *array = [NSMutableArray array];
+        for (ZegoSuperBoardSubViewModel *model in superBoardViewList) {
+            [array addObject:[NSObject dicFromObject:model]];
+        }
         NSMutableDictionary *params = [NSMutableDictionary dictionary];
         [params setObject:@(errorCode) forKey:@"errorCode"];
-        [params setObject:[NSObject dicFromObject:superBoardViewList] forKey:@"subViewModelList"];
+        [params setObject:array forKey:@"subViewModelList"];
+        [params setObject:@{} forKey:@"extraInfo"];
         result(params);
     }];
 }
@@ -192,6 +197,11 @@
 - (void)switchSuperBoardSubView:(FlutterMethodCall *)call result:(FlutterResult)result {
     NSDictionary *arguments = call.arguments;
     NSString *uniqueID = arguments[@"uniqueID"];
+    if ([[ZegoSuperBoardManager sharedInstance].superBoardView.currentSuperBoardSubView.model.uniqueID isEqualToString:uniqueID]) {
+        NSDictionary *params = @{@"errorCode":@(0)};
+        result(params);
+        return;
+    }
     [[ZegoSuperBoardManager sharedInstance].superBoardView switchSuperBoardSubView:uniqueID complete:^(ZegoSuperBoardError errorCode) {
         NSDictionary *params = @{@"errorCode":@(errorCode)};
         result(params);
@@ -290,6 +300,102 @@
     result([self hexadecimalFromUIColor:color]);
 }
 
+- (void)getThumbnailUrlList:(FlutterMethodCall *)call result:(FlutterResult)result {
+    result([[ZegoSuperBoardManager sharedInstance].superBoardView.currentSuperBoardSubView getThumbnailUrlList]);
+}
+
+- (void)getModel:(FlutterMethodCall *)call result:(FlutterResult)result {
+    result([NSObject dicFromObject:[ZegoSuperBoardManager sharedInstance].superBoardView.currentSuperBoardSubView.model]);
+}
+
+- (void)inputText:(FlutterMethodCall *)call result:(FlutterResult)result {
+    [[ZegoSuperBoardManager sharedInstance].superBoardView.currentSuperBoardSubView addTextEditWithComplete:^(ZegoSuperBoardError errorCode) {
+        result(@{@"errorCode": @(errorCode)});
+    }];
+}
+
+- (void)addText:(FlutterMethodCall *)call result:(FlutterResult)result {
+    NSDictionary *arguments = call.arguments;
+    NSString *text = arguments[@"text"];
+    int positionX = [arguments[@"positionX"]intValue];
+    int positionY = [arguments[@"positionY"]intValue];
+    [[ZegoSuperBoardManager sharedInstance].superBoardView.currentSuperBoardSubView addText:text positionX:positionX positionY:positionY complete:^(ZegoSuperBoardError errorCode) {
+        result(@{@"errorCode": @(errorCode)});
+    }];
+}
+
+- (void)undo:(FlutterMethodCall *)call result:(FlutterResult)result {
+    [[ZegoSuperBoardManager sharedInstance].superBoardView.currentSuperBoardSubView undo];
+    result(nil);
+}
+
+- (void)redo:(FlutterMethodCall *)call result:(FlutterResult)result {
+    [[ZegoSuperBoardManager sharedInstance].superBoardView.currentSuperBoardSubView redo];
+    result(nil);
+}
+
+- (void)clearCurrentPage:(FlutterMethodCall *)call result:(FlutterResult)result {
+    [[ZegoSuperBoardManager sharedInstance].superBoardView.currentSuperBoardSubView clearCurrentPage:^(ZegoSuperBoardError errorCode) {
+        result(@{@"errorCode": @(errorCode)});
+    }];
+}
+
+- (void)clearAllPage:(FlutterMethodCall *)call result:(FlutterResult)result {
+    [[ZegoSuperBoardManager sharedInstance].superBoardView.currentSuperBoardSubView clearAllPage:^(ZegoSuperBoardError errorCode) {
+        result(@{@"errorCode": @(errorCode)});
+    }];
+}
+
+- (void)setOperationMode:(FlutterMethodCall *)call result:(FlutterResult)result {
+    NSDictionary *arguments = call.arguments;
+    ZegoSuperBoardOperationMode model = [arguments[@"mode"]intValue];
+    [[ZegoSuperBoardManager sharedInstance].superBoardView.currentSuperBoardSubView setOperationMode:model];
+}
+
+- (void)flipToPage:(FlutterMethodCall *)call result:(FlutterResult)result {
+    NSDictionary *arguments = call.arguments;
+    int page = [arguments[@"page"]intValue];
+    [[ZegoSuperBoardManager sharedInstance].superBoardView.currentSuperBoardSubView flipToPage:page complete:^(ZegoSuperBoardError errorCode) {
+        result(@{@"errorCode": @(errorCode)});
+    }];
+}
+
+- (void)flipToPrePage:(FlutterMethodCall *)call result:(FlutterResult)result {
+    [[ZegoSuperBoardManager sharedInstance].superBoardView.currentSuperBoardSubView flipToPrePage:^(ZegoSuperBoardError errorCode) {
+        result(@{@"errorCode": @(errorCode)});
+    }];
+}
+
+- (void)flipToNextPage:(FlutterMethodCall *)call result:(FlutterResult)result {
+    [[ZegoSuperBoardManager sharedInstance].superBoardView.currentSuperBoardSubView flipToNextPage:^(ZegoSuperBoardError errorCode) {
+        result(@{@"errorCode": @(errorCode)});
+    }];
+}
+
+- (void)getCurrentPage:(FlutterMethodCall *)call result:(FlutterResult)result {
+    result(@([ZegoSuperBoardManager sharedInstance].superBoardView.currentSuperBoardSubView.currentPage));
+}
+
+- (void)getPageCount:(FlutterMethodCall *)call result:(FlutterResult)result {
+    result(@([ZegoSuperBoardManager sharedInstance].superBoardView.currentSuperBoardSubView.pageCount));
+}
+
+- (void)getVisibleSize:(FlutterMethodCall *)call result:(FlutterResult)result {
+    CGSize size = [ZegoSuperBoardManager sharedInstance].superBoardView.currentSuperBoardSubView.visibleSize;
+    NSDictionary *params = @{@"width": @(size.width), @"height": @(size.height)};
+    result(params);
+}
+
+- (void)clearSelected:(FlutterMethodCall *)call result:(FlutterResult)result {
+    [[ZegoSuperBoardManager sharedInstance].superBoardView.currentSuperBoardSubView clearSelected:^(ZegoSuperBoardError errorCode) {
+        result(@{@"errorCode": @(errorCode)});
+    }];
+}
+
+- (void)setWhiteboardBackgroundColor:(FlutterMethodCall *)call result:(FlutterResult)result {
+    
+//    [ZegoSuperBoardManager sharedInstance].superBoardView.currentSuperBoardSubView setWhiteboardBackgroundColor:<#(nonnull UIColor *)#>
+}
 
 - (UIColor *) colorWithHexString: (NSString *)color
 {
