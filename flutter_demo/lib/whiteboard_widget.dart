@@ -161,6 +161,13 @@ class WhiteboardWidgetState extends State<WhiteboardWidget>
       child: ValueListenableBuilder<ZegoSuperBoardSubViewModel?>(
         valueListenable: currentModelNotifier,
         builder: (context, currentModel, _) {
+          if (null == currentModel) {
+            return Container();
+          }
+
+          currentModel.syncCurrentPage();
+          currentModel.syncPageCount();
+
           return Container(
             height: buttonHeight,
             decoration: BoxDecoration(
@@ -177,7 +184,9 @@ class WhiteboardWidgetState extends State<WhiteboardWidget>
                     color: Colors.black,
                   ),
                   child: IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      currentModel.flipToPrePage();
+                    },
                     icon: const Icon(
                       Icons.skip_previous,
                       color: Colors.white,
@@ -185,7 +194,21 @@ class WhiteboardWidgetState extends State<WhiteboardWidget>
                   ),
                 ),
                 const SizedBox(width: spaceWidth),
-                // Text('${currentModelNotifier.value.}/$'),
+                Row(
+                  children: [
+                    ValueListenableBuilder<int>(
+                        valueListenable: currentModel.currentPageNotifier,
+                        builder: (context, currentPage, _) {
+                          return Text('$currentPage');
+                        }),
+                    const Text("/"),
+                    ValueListenableBuilder<int>(
+                        valueListenable: currentModel.pageCountNotifier,
+                        builder: (context, pageCount, _) {
+                          return Text('$pageCount');
+                        }),
+                  ],
+                ),
                 Container(
                   width: controlButtonWidth,
                   height: buttonHeight,
@@ -193,7 +216,9 @@ class WhiteboardWidgetState extends State<WhiteboardWidget>
                     color: Colors.black,
                   ),
                   child: IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      currentModel.flipToNextPage();
+                    },
                     icon: const Icon(
                       Icons.skip_next,
                       color: Colors.white,
