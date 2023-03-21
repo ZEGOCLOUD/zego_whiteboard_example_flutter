@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 
 import im.zego.superboard.callback.IZegoSuperBoardApiCalledCallback;
@@ -292,6 +293,15 @@ public class ZegoExpressEngineMethodHandler {
 
     public static void switchSuperBoardSubView(MethodCall call, Result result) {
         String uniqueID = call.argument("uniqueID");
+        String currentUniqueID = ZegoSuperBoardManager.getInstance().getSuperBoardView().getCurrentSuperBoardSubView().getModel().uniqueID;
+        if(Objects.equals(currentUniqueID, uniqueID)) {
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("errorCode", 0);
+
+            result.success(map);
+            return;
+        }
+
         ZegoSuperBoardManager.getInstance().getSuperBoardView().switchSuperBoardSubView(
                 uniqueID,
                 new IZegoSuperBoardSwitchCallback() {

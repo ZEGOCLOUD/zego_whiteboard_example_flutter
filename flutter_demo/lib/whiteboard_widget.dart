@@ -90,17 +90,7 @@ class WhiteboardWidgetState extends State<WhiteboardWidget>
                             onTap: isWhiteboardSwitching
                                 ? null
                                 : () {
-                                    isWhiteboardSwitchingNotifier.value = true;
-
-                                    ZegoSuperBoardEngine.instance
-                                        .switchSuperBoardSubView(
-                                      whiteboard.uniqueID,
-                                    )
-                                        .then((value) {
-                                      isWhiteboardSwitchingNotifier.value =
-                                          false;
-                                      currentModelNotifier.value = whiteboard;
-                                    });
+                                    switchSuperBoardSubView(whiteboard);
                                   },
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
@@ -296,10 +286,7 @@ class WhiteboardWidgetState extends State<WhiteboardWidget>
         .toList();
     if (existedBlankWhiteboardList.isNotEmpty) {
       /// blank whiteboard is exist, not create anymore, switch
-      currentModelNotifier.value = existedBlankWhiteboardList.first;
-      ZegoSuperBoardEngine.instance.switchSuperBoardSubView(
-        currentModelNotifier.value!.uniqueID,
-      );
+      switchSuperBoardSubView(existedBlankWhiteboardList.first);
 
       return;
     }
@@ -337,10 +324,7 @@ class WhiteboardWidgetState extends State<WhiteboardWidget>
         .toList();
     if (existedWhiteboardList.isNotEmpty) {
       /// target file id is exist, not create anymore, switch
-      currentModelNotifier.value = existedWhiteboardList.first;
-      ZegoSuperBoardEngine.instance.switchSuperBoardSubView(
-        currentModelNotifier.value!.uniqueID,
-      );
+      switchSuperBoardSubView(existedWhiteboardList.first);
 
       return;
     }
@@ -372,6 +356,27 @@ class WhiteboardWidgetState extends State<WhiteboardWidget>
         .querySuperBoardSubViewList()
         .then((result) {
       whiteboardListsNotifier.value = result.subViewModelList;
+    });
+  }
+
+  void switchSuperBoardSubView(ZegoSuperBoardSubViewModel targetWhiteboard) {
+    debugPrint("switchSuperBoardSubView ${targetWhiteboard.name} 1");
+    if (isWhiteboardSwitchingNotifier.value) {
+      debugPrint("switchSuperBoardSubView ${targetWhiteboard.name} 2");
+      return;
+    }
+
+    isWhiteboardSwitchingNotifier.value = true;
+
+    debugPrint("switchSuperBoardSubView ${targetWhiteboard.name} 3");
+    ZegoSuperBoardEngine.instance
+        .switchSuperBoardSubView(
+      targetWhiteboard.uniqueID,
+    )
+        .then((value) {
+      debugPrint("switchSuperBoardSubView ${targetWhiteboard.name} 4");
+      isWhiteboardSwitchingNotifier.value = false;
+      currentModelNotifier.value = targetWhiteboard;
     });
   }
 
