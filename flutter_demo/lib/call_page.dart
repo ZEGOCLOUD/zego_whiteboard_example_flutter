@@ -28,6 +28,10 @@ class _CallPageState extends State<CallPage> {
   Widget? remoteView;
   int? remoteViewID;
 
+  final cameraStateNotifier = ValueNotifier<bool>(true);
+  final microphoneStateNotifier = ValueNotifier<bool>(true);
+  final roomStateNotifier = ValueNotifier<bool>(false);
+
   @override
   void initState() {
     startListenEvent();
@@ -65,7 +69,7 @@ class _CallPageState extends State<CallPage> {
               whiteboardWidget(whiteboardWidth, whiteboardHeight),
               localViewWidget(videoViewWidth, videoViewHeight),
               remoteViewWidget(videoViewWidth, videoViewHeight),
-              endButton(),
+              controlBar(),
             ],
           );
         },
@@ -105,31 +109,92 @@ class _CallPageState extends State<CallPage> {
       child: SizedBox(
         width: width,
         height: height,
-        child: const WhiteboardWidget(),
+        child: ValueListenableBuilder<bool>(
+          valueListenable: roomStateNotifier,
+          builder: (context, roomState, _) {
+            return roomState ? const WhiteboardWidget() : Container();
+          },
+        ),
       ),
     );
   }
 
-  Widget endButton() {
+  Widget controlBar() {
     return Positioned(
       bottom: 5,
       left: 0,
       right: 0,
-      child: SizedBox(
-        width: 50,
-        height: 50,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                  shape: const CircleBorder(), backgroundColor: Colors.red),
-              onPressed: () => Navigator.pop(context),
-              child: const Center(child: Icon(Icons.call_end, size: 32)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 50,
+            height: 50,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.black,
             ),
-          ],
-        ),
+            child: ValueListenableBuilder(
+              valueListenable: cameraStateNotifier,
+              builder: (context, isCameraEnabled, _) {
+                return IconButton(
+                  onPressed: () {
+                    cameraStateNotifier.value = !cameraStateNotifier.value;
+                    ZegoExpressEngine.instance
+                        .enableCamera(cameraStateNotifier.value);
+                  },
+                  icon: Icon(
+                    isCameraEnabled ? Icons.camera_alt : Icons.cancel,
+                    size: 32,
+                    color: Colors.white,
+                  ),
+                );
+              },
+            ),
+          ),
+          Container(
+            width: 50,
+            height: 50,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.red,
+            ),
+            child: IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(
+                Icons.call_end,
+                size: 32,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          Container(
+            width: 50,
+            height: 50,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.black,
+            ),
+            child: ValueListenableBuilder<bool>(
+              valueListenable: microphoneStateNotifier,
+              builder: (context, isMicrophoneEnabled, _) {
+                return IconButton(
+                  onPressed: () {
+                    ZegoExpressEngine.instance
+                        .muteMicrophone(microphoneStateNotifier.value);
+                    microphoneStateNotifier.value =
+                        !microphoneStateNotifier.value;
+                  },
+                  icon: Icon(
+                    isMicrophoneEnabled ? Icons.mic : Icons.mic_off,
+                    size: 32,
+                    color: Colors.white,
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -195,6 +260,7 @@ class _CallPageState extends State<CallPage> {
     // Callback for updates on the current user's room connection status.
     ZegoExpressEngine.onRoomStateUpdate =
         (roomID, state, errorCode, extendedData) {
+      roomStateNotifier.value = state == ZegoRoomState.Connected;
       debugPrint(
           'onRoomStateUpdate: roomID: $roomID, state: ${state.name}, errorCode: $errorCode, extendedData: $extendedData');
     };

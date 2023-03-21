@@ -1,10 +1,12 @@
 import 'dart:typed_data';
+import 'package:zego_superwhiteboard/src/zego_super_board_subview.dart';
+
+import '../zego_superwhiteboard.dart';
 import 'impl/zego_super_board_impl.dart';
-import 'zego_super_board_defines.dart';
 
 // ignore_for_file: deprecated_member_use_from_same_package
 
-class ZegoSuperBoardEngine {
+class ZegoSuperBoardEngine with ZegoSuperBoardView, ZegoSuperBoardSubView {
   /// Private constructor
   ZegoSuperBoardEngine._internal();
 
@@ -78,26 +80,6 @@ class ZegoSuperBoardEngine {
   Future<ZegoSuperBoardQueryListResult> querySuperBoardSubViewList() async {
     return await ZegoSuperBoardImpl.querySuperBoardSubViewList();
   }
-
-  //
-  // @SuppressWarnings("unused")
-  // public
-  //
-  // void getSuperBoardView(MethodCall call, Result result) {
-  //   ZegoSuperBoardManager.getInstance().getSuperBoardView();
-  //
-  //   result.success(null);
-  // }
-  //
-  // @SuppressWarnings("unused")
-  // public
-  //
-  // void getSuperBoardSubView(MethodCall call, Result result) {
-  //   String uniqueID = call.argument("uniqueID");
-  //   ZegoSuperBoardManager.getInstance().getSuperBoardSubView(uniqueID);
-  //
-  //   result.success(null);
-  // }
 
   Future<ZegoSuperBoardGetListResult> getSuperBoardSubViewModelList() async {
     return await ZegoSuperBoardImpl.getSuperBoardSubViewModelList();

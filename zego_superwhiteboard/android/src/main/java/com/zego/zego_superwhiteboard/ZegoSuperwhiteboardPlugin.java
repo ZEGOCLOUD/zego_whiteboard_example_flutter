@@ -44,11 +44,11 @@ public class ZegoSuperwhiteboardPlugin implements FlutterPlugin, MethodCallHandl
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
-    MethodChannel methodChannel = new MethodChannel(flutterPluginBinding.getFlutterEngine().getDartExecutor(), "plugins.zego.im/zego_superwhiteboard");
-    EventChannel eventChannel = new EventChannel(flutterPluginBinding.getFlutterEngine().getDartExecutor(), "plugins.zego.im/zego_superwhiteboard_event_handler");
+    MethodChannel methodChannel = new MethodChannel(flutterPluginBinding.getFlutterEngine().getDartExecutor(), "plugins.zego.im/zego_superboard");
+    EventChannel eventChannel = new EventChannel(flutterPluginBinding.getFlutterEngine().getDartExecutor(), "plugins.zego.im/zego_superboard_event_handler");
 
     // Register platform view factory
-    flutterPluginBinding.getPlatformViewRegistry().registerViewFactory("plugins.zego.im/zego_superwhiteboard_view", ZegoPlatformViewFactory.getInstance());
+    flutterPluginBinding.getPlatformViewRegistry().registerViewFactory("plugins.zego.im/zego_superboard_view", ZegoPlatformViewFactory.getInstance());
 
     this.setupPlugin(null, flutterPluginBinding, methodChannel, eventChannel);
   }
@@ -82,11 +82,11 @@ public class ZegoSuperwhiteboardPlugin implements FlutterPlugin, MethodCallHandl
   @SuppressWarnings("unused")
   public static void registerWith(Registrar registrar) {
 
-    MethodChannel methodChannel = new MethodChannel(registrar.messenger(), "plugins.zego.im/zego_express_engine");
-    EventChannel eventChannel = new EventChannel(registrar.messenger(), "plugins.zego.im/zego_express_event_handler");
+    MethodChannel methodChannel = new MethodChannel(registrar.messenger(), "plugins.zego.im/zego_superboard_engine");
+    EventChannel eventChannel = new EventChannel(registrar.messenger(), "plugins.zego.im/zego_superboard_event_handler");
 
     // Register platform view factory
-    registrar.platformViewRegistry().registerViewFactory("plugins.zego.im/zego_express_view", ZegoPlatformViewFactory.getInstance());
+    registrar.platformViewRegistry().registerViewFactory("plugins.zego.im/zego_superboard_view", ZegoPlatformViewFactory.getInstance());
 
     ZegoSuperwhiteboardPlugin plugin = new ZegoSuperwhiteboardPlugin();
     plugin.setupPlugin(registrar, null, methodChannel, eventChannel);

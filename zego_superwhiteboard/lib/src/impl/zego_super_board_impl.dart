@@ -5,7 +5,7 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../zego_super_board_api.dart';
+import '../zego_super_board_engine.dart';
 import '../zego_super_board_defines.dart';
 import '../zego_super_board_enum_extension.dart';
 import '../utils/zego_super_board_utils.dart';
@@ -19,9 +19,9 @@ class Global {
 class ZegoSuperBoardImpl {
   /// Method Channel
   static const MethodChannel _channel =
-      MethodChannel('plugins.zego.im/zego_superwhiteboard');
+      MethodChannel('plugins.zego.im/zego_superboard');
   static const EventChannel _event =
-      EventChannel('plugins.zego.im/zego_superwhiteboard_event_handler');
+      EventChannel('plugins.zego.im/zego_superboard_event_handler');
 
   /// Used to receive the native event stream
   static StreamSubscription<dynamic>? _streamSubscription;
@@ -181,9 +181,9 @@ class ZegoSuperBoardImpl {
     return ZegoSuperBoardQueryListResult(
       errorCode: result['errorCode'] as int,
       subViewModelList:
-          (result['subViewModelList'] as List<Map<dynamic, dynamic>>)
-              .map((subViewModel) {
-        return ZegoSuperBoardSubViewModel.fromMap(subViewModel);
+          (result['subViewModelList'] as List<dynamic>).map((subViewModel) {
+        return ZegoSuperBoardSubViewModel.fromMap(
+            subViewModel as Map<dynamic, dynamic>);
       }).toList(),
       extraInfo: result['extraInfo'] as Map<dynamic, dynamic>,
     );
@@ -295,6 +295,26 @@ class ZegoSuperBoardImpl {
     return await _channel.invokeMethod('getBrushColor');
   }
 
+  static Future<int> switchSuperBoardSubView(String uniqueID) async {
+    final Map<dynamic, dynamic> result =
+        await _channel.invokeMethod('switchSuperBoardSubView', {
+      'uniqueID': uniqueID,
+    });
+
+    return result['errorCode'];
+  }
+
+  static Future<int> switchSuperBoardSubExcelView(
+      String uniqueID, int sheetIndex) async {
+    final Map<dynamic, dynamic> result =
+        await _channel.invokeMethod('switchSuperBoardSubExcelView', {
+      'uniqueID': uniqueID,
+      'sheetIndex': sheetIndex,
+    });
+
+    return result['errorCode'];
+  }
+
   /* EventHandler */
 
   static void _registerEventHandler() async {
@@ -310,7 +330,7 @@ class ZegoSuperBoardImpl {
   static void _eventListener(dynamic data) {
     final Map<dynamic, dynamic> map = data;
     switch (map['method']) {
-      case 'onDebugError':
+      case 'onError':
         if (ZegoSuperBoardEngine.onError == null) return;
         ZegoSuperBoardEngine.onError!(map['errorCode']);
         break;

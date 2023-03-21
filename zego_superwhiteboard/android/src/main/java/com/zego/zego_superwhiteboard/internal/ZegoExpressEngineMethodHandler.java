@@ -34,6 +34,7 @@ import im.zego.superboard.callback.IZegoSuperBoardCreateCallback;
 import im.zego.superboard.callback.IZegoSuperBoardDestroyCallback;
 import im.zego.superboard.callback.IZegoSuperBoardInitCallback;
 import im.zego.superboard.callback.IZegoSuperBoardQueryListCallback;
+import im.zego.superboard.callback.IZegoSuperBoardSwitchCallback;
 import im.zego.superboard.model.ZegoCreateFileConfig;
 import im.zego.superboard.model.ZegoSuperBoardSubViewModel;
 import im.zego.zegoexpress.constants.ZegoScenario;
@@ -82,7 +83,6 @@ public class ZegoExpressEngineMethodHandler {
 
         }
         ZegoExpressEngineEventHandler.getInstance().sink = sink;
-        ZegoSuperBoardManager.getInstance().setManagerListener(ZegoExpressEngineEventHandler.getInstance().managerListener);
 
         HashMap<String, Object> configMap = call.argument("config");
         long appID = ZegoUtils.longValue((Number) configMap.get("appID"));
@@ -103,6 +103,8 @@ public class ZegoExpressEngineMethodHandler {
             public void onInit(int errorCode) {
                 HashMap<String, Object> map = new HashMap<>();
                 map.put("errorCode", errorCode);
+
+                ZegoSuperBoardManager.getInstance().setManagerListener(ZegoExpressEngineEventHandler.getInstance().managerListener);
 
                 result.success(map);
             }
@@ -193,7 +195,6 @@ public class ZegoExpressEngineMethodHandler {
         ZegoSuperBoardManager.getInstance().createWhiteboardView(config, new IZegoSuperBoardCreateCallback() {
             @Override
             public void onViewCreated(int errorCode, ZegoSuperBoardSubViewModel subViewModel) {
-
                 HashMap<String, Object> map = new HashMap<>();
 
                 map.put("errorCode", errorCode);
@@ -229,7 +230,6 @@ public class ZegoExpressEngineMethodHandler {
         ZegoSuperBoardManager.getInstance().destroySuperBoardSubView(uniqueID, new IZegoSuperBoardDestroyCallback() {
             @Override
             public void onViewDestroyed(int errorCode) {
-
                 HashMap<String, Object> map = new HashMap<>();
                 map.put("errorCode", errorCode);
 
@@ -261,21 +261,6 @@ public class ZegoExpressEngineMethodHandler {
     }
 
     @SuppressWarnings("unused")
-    public static void getSuperBoardView(MethodCall call, Result result) {
-        ZegoSuperBoardManager.getInstance().getSuperBoardView();
-
-        result.success(null);
-    }
-
-    @SuppressWarnings("unused")
-    public static void getSuperBoardSubView(MethodCall call, Result result) {
-        String uniqueID = call.argument("uniqueID");
-        ZegoSuperBoardManager.getInstance().getSuperBoardSubView(uniqueID);
-
-        result.success(null);
-    }
-
-    @SuppressWarnings("unused")
     public static void getSuperBoardSubViewModelList(MethodCall call, Result result) {
         List<ZegoSuperBoardSubViewModel> subViewModelList = ZegoSuperBoardManager.getInstance().getSuperBoardSubViewModelList();
 
@@ -286,6 +271,52 @@ public class ZegoExpressEngineMethodHandler {
 
         result.success(subViewModelListMap);
     }
+
+//    @SuppressWarnings("unused")
+//    public static void getSuperBoardView(MethodCall call, Result result) {
+//        result.success(ZegoSuperBoardManager.getInstance().getSuperBoardView());
+//    }
+//
+//    @SuppressWarnings("unused")
+//    public static void getSuperBoardSubView(MethodCall call, Result result) {
+//        result.success(ZegoSuperBoardManager.getInstance().getSuperBoardSubView(call.argument("uniqueID")));
+//    }
+
+//    public static void getCurrentSuperBoardSubView(MethodCall call, Result result) {
+//        ZegoSuperBoardManager.getInstance().getSuperBoardView().getCurrentSuperBoardSubView();
+//    }
+
+
+    public static void switchSuperBoardSubView(MethodCall call, Result result) {
+        String uniqueID = call.argument("uniqueID");
+        ZegoSuperBoardManager.getInstance().getSuperBoardView().switchSuperBoardSubView(
+                uniqueID,
+                new IZegoSuperBoardSwitchCallback() {
+                    @Override
+                    public void onViewSwitched(int errorCode) {
+                        HashMap<String, Object> map = new HashMap<>();
+                        map.put("errorCode", errorCode);
+
+                        result.success(map);
+                    }
+                });
+    }
+
+    public static void switchSuperBoardSubExcelView(MethodCall call, Result result) {
+        ZegoSuperBoardManager.getInstance().getSuperBoardView().switchSuperBoardSubView(
+                call.argument("uniqueID"),
+                ZegoUtils.intValue((Number) call.argument("sheetIndex")),
+                new IZegoSuperBoardSwitchCallback() {
+                    @Override
+                    public void onViewSwitched(int errorCode) {
+                        HashMap<String, Object> map = new HashMap<>();
+                        map.put("errorCode", errorCode);
+
+                        result.success(map);
+                    }
+                });
+    }
+
 
     @SuppressWarnings("unused")
     public static void enableSyncScale(MethodCall call, Result result) {

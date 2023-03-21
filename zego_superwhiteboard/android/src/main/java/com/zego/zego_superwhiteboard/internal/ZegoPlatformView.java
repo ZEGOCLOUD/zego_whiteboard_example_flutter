@@ -9,30 +9,21 @@
 package com.zego.zego_superwhiteboard.internal;
 
 import android.content.Context;
-import android.view.SurfaceView;
 import android.view.View;
 
+import im.zego.superboard.ZegoSuperBoardManager;
 import io.flutter.plugin.platform.PlatformView;
 
 public class ZegoPlatformView implements PlatformView {
-
-    private SurfaceView surfaceView;
-
     ZegoPlatformView(Context context) {
-        this.surfaceView = new SurfaceView(context);
-    }
-
-    public SurfaceView getSurfaceView() {
-        return this.surfaceView;
     }
 
     @Override
     public View getView() {
-        return this.surfaceView;
+        return ZegoSuperBoardManager.getInstance().getSuperBoardView();
     }
 
     @Override
     public void dispose() {
-        this.surfaceView = null;
     }
 }

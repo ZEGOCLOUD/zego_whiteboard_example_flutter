@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:zego_superwhiteboard/zego_superwhiteboard.dart';
 
-const listWidth = 50.0;
+const listWidth = 80.0;
 const spaceWidth = 5.0;
+const spaceHeight = 5.0;
 const buttonHeight = 30.0;
+const controlButtonWidth = 50.0;
 
 class WhiteboardWidget extends StatefulWidget {
   const WhiteboardWidget({super.key});
@@ -14,31 +16,32 @@ class WhiteboardWidget extends StatefulWidget {
 
 class WhiteboardWidgetState extends State<WhiteboardWidget>
     with TickerProviderStateMixin {
+  final isWhiteboardCreatingNotifier = ValueNotifier<bool>(false);
+
   final currentModelNotifier = ValueNotifier<ZegoSuperBoardSubViewModel?>(null);
   final whiteboardListsNotifier =
       ValueNotifier<List<ZegoSuperBoardSubViewModel>>([]);
+
+  final superBoardViewNotifier = ValueNotifier<Widget?>(null);
 
   BoxDecoration get buttonDecoration => BoxDecoration(
         color: Colors.blue.withOpacity(0.5),
       );
 
+  int get blankWBCount => whiteboardListsNotifier.value
+      .where((element) => element.fileType == ZegoSuperBoardFileType.unknown)
+      .toList()
+      .length;
+
   @override
   void initState() {
     super.initState();
 
-    List<ZegoSuperBoardSubViewModel> subViewModelList = [];
-
-    //  test
-    for (int i = 0; i < 5; i++) {
-      subViewModelList.add(ZegoSuperBoardSubViewModel(name: 'wb_$i'));
-    }
-    whiteboardListsNotifier.value = subViewModelList;
-
-    ZegoSuperBoardEngine.instance
-        .querySuperBoardSubViewList()
-        .then((result) {
-      whiteboardListsNotifier.value = result.subViewModelList;
+    ZegoSuperBoardEngine.instance.createSuperBoardView((id) {}).then((value) {
+      superBoardViewNotifier.value = value;
     });
+
+    syncWhiteboardList();
   }
 
   @override
@@ -52,7 +55,8 @@ class WhiteboardWidgetState extends State<WhiteboardWidget>
           children: [
             whiteboardList(),
             currentWhiteboard(),
-            controlBar(constraints.maxWidth, constraints.maxHeight),
+            currentWhiteboardControls(),
+            createControls(constraints.maxWidth, constraints.maxHeight),
           ],
         );
       }),
@@ -63,36 +67,66 @@ class WhiteboardWidgetState extends State<WhiteboardWidget>
     return Positioned(
         left: spaceWidth,
         top: spaceWidth,
-        bottom: spaceWidth,
-        child: SizedBox(
+        bottom: 2 * buttonHeight + 3 * spaceHeight,
+        child: Container(
           width: listWidth,
+          decoration: BoxDecoration(
+            color: Colors.blue.withOpacity(0.2),
+          ),
           child: ValueListenableBuilder(
             valueListenable: whiteboardListsNotifier,
             builder: (context, whiteboardList, _) {
-              return ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: whiteboardList.length,
-                itemBuilder: (context, index) {
-                  final whiteboard = whiteboardList.elementAt(index);
-                  return GestureDetector(
-                    onTap: () {
-                      currentModelNotifier.value = whiteboard;
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.blue.withOpacity(0.1),
-                        border: Border.all(color: Colors.black),
-                      ),
-                      child: Text(
-                        whiteboard.name,
-                        style: const TextStyle(
-                          fontSize: 15,
+              return Scrollbar(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: whiteboardList.length,
+                  itemBuilder: (context, index) {
+                    final whiteboard = whiteboardList.elementAt(index);
+                    return GestureDetector(
+                      onTap: () {
+                        currentModelNotifier.value = whiteboard;
+
+                        ZegoSuperBoardEngine.instance.switchSuperBoardSubView(
+                          whiteboard.uniqueID,
+                        );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: spaceHeight / 2,
+                        ),
+                        child:
+                            ValueListenableBuilder<ZegoSuperBoardSubViewModel?>(
+                          valueListenable: currentModelNotifier,
+                          builder: (context, currentModel, _) {
+                            return Container(
+                              height: buttonHeight,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: spaceWidth,
+                                vertical: spaceHeight,
+                              ),
+                              decoration: BoxDecoration(
+                                color: whiteboard.uniqueID ==
+                                        currentModel?.uniqueID
+                                    ? Colors.blue
+                                    : Colors.blue.withOpacity(0.1),
+                                border: Border.all(color: Colors.blue),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Text(
+                                whiteboard.name,
+                                textAlign: TextAlign.center,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               );
             },
           ),
@@ -104,56 +138,131 @@ class WhiteboardWidgetState extends State<WhiteboardWidget>
       left: spaceWidth + listWidth + spaceWidth,
       right: spaceWidth,
       top: spaceWidth,
-      bottom: spaceWidth,
-      child: ValueListenableBuilder(
-        valueListenable: currentModelNotifier,
-        builder: (context, whiteboard, _) {
-          if (null == whiteboard) {
-            return const Text("whiteboard is null");
-          }
-
+      bottom: buttonHeight + spaceWidth,
+      child: ValueListenableBuilder<Widget?>(
+        valueListenable: superBoardViewNotifier,
+        builder: (context, superBoardView, _) {
           return Container(
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.black.withOpacity(0.2)),
-              color: Colors.black.withOpacity(0.05),
+              border: Border.all(color: Colors.black.withOpacity(0.3)),
             ),
-            child: Text(whiteboard.name),
+            child: superBoardView,
           );
         },
       ),
     );
   }
 
-  Widget controlBar(double width, double height) {
+  Widget currentWhiteboardControls() {
+    return Positioned(
+      left: listWidth + spaceWidth,
+      right: spaceWidth,
+      bottom: spaceWidth,
+      child: ValueListenableBuilder<ZegoSuperBoardSubViewModel?>(
+        valueListenable: currentModelNotifier,
+        builder: (context, currentModel, _) {
+          return Container(
+            height: buttonHeight,
+            decoration: BoxDecoration(
+              color: Colors.blue.withOpacity(0.2),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  width: controlButtonWidth,
+                  height: buttonHeight,
+                  decoration: const BoxDecoration(
+                    color: Colors.black,
+                  ),
+                  child: IconButton(
+                    onPressed: () {},
+                    icon: const Icon(
+                      Icons.skip_previous,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: spaceWidth),
+                // Text('${currentModelNotifier.value.}/$'),
+                Container(
+                  width: controlButtonWidth,
+                  height: buttonHeight,
+                  decoration: const BoxDecoration(
+                    color: Colors.black,
+                  ),
+                  child: IconButton(
+                    onPressed: () {},
+                    icon: const Icon(
+                      Icons.skip_next,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget createControls(double whiteboardWidth, double whiteboardHeight) {
     return Positioned(
       left: spaceWidth,
       bottom: spaceWidth,
       child: Column(
         children: [
-          OutlinedButton(
-            onPressed: () {
-              onNormalWBPressed(width, height);
-            },
-            child: const Text("Normal"),
+          SizedBox(
+            width: listWidth,
+            height: buttonHeight,
+            child: ValueListenableBuilder<bool>(
+              valueListenable: isWhiteboardCreatingNotifier,
+              builder: (context, isWhiteboardCreating, _) {
+                return OutlinedButton(
+                    onPressed: isWhiteboardCreating
+                        ? null
+                        : () {
+                            onBlankWBPressed(whiteboardWidth, whiteboardHeight);
+                          },
+                    child: const Text("Blank"));
+              },
+            ),
           ),
           const SizedBox(height: spaceWidth),
-          OutlinedButton(
-            onPressed: () {
-              onFileWBPressed(width, height);
-            },
-            child: const Text("File"),
+          SizedBox(
+            width: listWidth,
+            height: buttonHeight,
+            child: ValueListenableBuilder<bool>(
+              valueListenable: isWhiteboardCreatingNotifier,
+              builder: (context, isWhiteboardCreating, _) {
+                return OutlinedButton(
+                    onPressed: isWhiteboardCreating
+                        ? null
+                        : () {
+                            onFileWBPressed(whiteboardWidth, whiteboardHeight);
+                          },
+                    child: const Text("File"));
+              },
+            ),
           ),
         ],
       ),
     );
   }
 
-  void onNormalWBPressed(double width, double height) {
+  void onBlankWBPressed(double whiteboardWidth, double whiteboardHeight) {
+    if (isWhiteboardCreatingNotifier.value) {
+      return;
+    }
+    isWhiteboardCreatingNotifier.value = true;
+
     ZegoSuperBoardEngine.instance
         .createWhiteboardView(ZegoCreateWhiteboardConfig(
-      name: 'WhiteBoard',
-      perPageWidth: width.toInt(),
-      perPageHeight: height.toInt(),
+      name: 'Blank_$blankWBCount',
+      perPageWidth: whiteboardWidth.toInt(),
+      perPageHeight: whiteboardHeight.toInt(),
       pageCount: 1,
     ))
         .then((result) {
@@ -162,12 +271,19 @@ class WhiteboardWidgetState extends State<WhiteboardWidget>
         return;
       }
 
-      /// todo@yuyj
-      result.subViewModel;
+      currentModelNotifier.value = result.subViewModel;
+      syncWhiteboardList().then((value) {
+        isWhiteboardCreatingNotifier.value = false;
+      });
     });
   }
 
   void onFileWBPressed(double width, double height) {
+    if (isWhiteboardCreatingNotifier.value) {
+      return;
+    }
+    isWhiteboardCreatingNotifier.value = true;
+
     ZegoSuperBoardEngine.instance
         .createFileView(ZegoCreateFileConfig(
       fileID: 'ppEoHhuIKVP7WYoK',
@@ -178,8 +294,18 @@ class WhiteboardWidgetState extends State<WhiteboardWidget>
         return;
       }
 
-      /// todo@yuyj
-      result.subViewModel;
+      currentModelNotifier.value = result.subViewModel;
+      syncWhiteboardList().then((value) {
+        isWhiteboardCreatingNotifier.value = false;
+      });
+    });
+  }
+
+  Future<void> syncWhiteboardList() async {
+    await ZegoSuperBoardEngine.instance
+        .querySuperBoardSubViewList()
+        .then((result) {
+      whiteboardListsNotifier.value = result.subViewModelList;
     });
   }
 }

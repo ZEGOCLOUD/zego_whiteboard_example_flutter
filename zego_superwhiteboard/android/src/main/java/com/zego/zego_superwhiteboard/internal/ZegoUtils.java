@@ -64,7 +64,7 @@ public class ZegoUtils {
         subViewModelMap.put("name", subViewModel.name);
         subViewModelMap.put("createTime", subViewModel.createTime);
         subViewModelMap.put("fileID", subViewModel.fileID);
-        subViewModelMap.put("fileType", subViewModel.fileType);
+        subViewModelMap.put("fileType", subViewModel.fileType.getFileType());
         subViewModelMap.put("uniqueID", subViewModel.uniqueID);
         subViewModelMap.put("whiteboardIDList", subViewModel.whiteboardIDList);
         return subViewModelMap;

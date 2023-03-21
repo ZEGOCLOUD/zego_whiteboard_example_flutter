@@ -23,6 +23,7 @@ import io.flutter.plugin.common.EventChannel;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.util.Size;
 
 import androidx.annotation.NonNull;
@@ -88,81 +89,6 @@ public class ZegoExpressEngineEventHandler {
         }
     };
 
-
-//    IZegoSuperBoardInitCallback superBoardInitCallback = new IZegoSuperBoardInitCallback() {
-//        @Override
-//        public void onInit(int errorCode) {
-//
-//            if (guardSink()) {
-//                return;
-//            }
-//
-//            HashMap<String, Object> map = new HashMap<>();
-//
-//            map.put("method", "onInit");
-//            map.put("errorCode", errorCode);
-//
-//            sink.success(map);
-//        }
-//    };
-
-//    IZegoSuperBoardQueryListCallback queryListCallback = new IZegoSuperBoardQueryListCallback() {
-//        @Override
-//        public void onQuery(int errorCode, ZegoSuperBoardSubViewModel[] subViewModelList, HashMap<String, String> extraInfo) {
-//
-//            if (guardSink()) {
-//                return;
-//            }
-//
-//            HashMap<String, Object> map = new HashMap<>();
-//
-//            ArrayList<ZegoSuperBoardSubViewModel> subViewModelArray = new ArrayList<>();
-//            Collections.addAll(subViewModelArray, subViewModelList);
-//
-//            map.put("method", "onQuery");
-//            map.put("errorCode", errorCode);
-//            map.put("subViewModelList", mapListFromSubViewModelList(subViewModelArray));
-//            map.put("extraInfo", extraInfo);
-//
-//            sink.success(map);
-//        }
-//    };
-
-
-//    IZegoSuperBoardCreateCallback createCallback = new IZegoSuperBoardCreateCallback() {
-//        @Override
-//        public void onViewCreated(int errorCode, ZegoSuperBoardSubViewModel subViewModel) {
-//
-//            if (guardSink()) {
-//                return;
-//            }
-//
-//            HashMap<String, Object> map = new HashMap<>();
-//
-//            map.put("method", "onViewCreated");
-//            map.put("errorCode", errorCode);
-//            map.put("subViewModel", mapFromSubViewModel(subViewModel));
-//
-//            sink.success(map);
-//        }
-//    };
-
-//    IZegoSuperBoardDestroyCallback destroyCallback = new IZegoSuperBoardDestroyCallback() {
-//        @Override
-//        public void onViewDestroyed(int errorCode) {
-//            if (guardSink()) {
-//                return;
-//            }
-//
-//            HashMap<String, Object> map = new HashMap<>();
-//
-//            map.put("method", "onViewDestroyed");
-//            map.put("errorCode", errorCode);
-//
-//            sink.success(map);
-//        }
-//    };
-
     IZegoSuperBoardSwitchCallback switchCallback = new IZegoSuperBoardSwitchCallback() {
         @Override
         public void onViewSwitched(int errorCode) {
@@ -183,7 +109,6 @@ public class ZegoExpressEngineEventHandler {
     IZegoSuperBoardViewListener viewListener = new IZegoSuperBoardViewListener() {
         @Override
         public void onScrollChange(int currentPage, int pageCount, ZegoSuperBoardSubViewModel subViewModel) {
-
             if (guardSink()) {
                 return;
             }
@@ -200,7 +125,6 @@ public class ZegoExpressEngineEventHandler {
 
         @Override
         public void onSizeChange(Size visibleSize, ZegoSuperBoardSubViewModel subViewModel) {
-
             if (guardSink()) {
                 return;
             }

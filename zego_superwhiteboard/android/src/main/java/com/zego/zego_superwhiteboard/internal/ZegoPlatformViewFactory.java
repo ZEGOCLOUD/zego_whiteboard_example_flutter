@@ -13,6 +13,7 @@ import android.content.Context;
 import java.util.HashMap;
 import java.util.Locale;
 
+import im.zego.superboard.ZegoSuperBoardManager;
 import io.flutter.plugin.common.MessageCodec;
 import io.flutter.plugin.common.StandardMessageCodec;
 import io.flutter.plugin.platform.PlatformView;
@@ -42,14 +43,12 @@ public class ZegoPlatformViewFactory extends PlatformViewFactory {
 
     /// Called when dart invoke `destroyPlatformView`
     Boolean destroyPlatformView(int viewID) {
-
         ZegoPlatformView platformView = this.platformViews.get(viewID);
 
         if (platformView == null) {
             logCurrentPlatformViews();
             return false;
         }
-
 
         this.platformViews.remove(viewID);
 
@@ -60,13 +59,10 @@ public class ZegoPlatformViewFactory extends PlatformViewFactory {
 
     /// Get PlatformView to pass to native when dart invoke `startPreview` or `startPlayingStream`
     ZegoPlatformView getPlatformView(int viewID) {
-
-
         logCurrentPlatformViews();
 
         return this.platformViews.get(viewID);
     }
-
 
     private void addPlatformView(int viewID, ZegoPlatformView view) {
         this.platformViews.put(viewID, view);
@@ -88,7 +84,7 @@ public class ZegoPlatformViewFactory extends PlatformViewFactory {
             if (eachPlatformView == null) {
                 continue;
             }
-            desc.append(String.format(Locale.ENGLISH, "[ID:%d|View:%s] ", id, eachPlatformView.getSurfaceView() == null ? "null" : eachPlatformView.getSurfaceView().hashCode()));
+            desc.append(String.format(Locale.ENGLISH, "[ID:%d|View:%s] ", id, eachPlatformView.getView() == null ? "null" : eachPlatformView.getView().hashCode()));
         }
     }
 }
