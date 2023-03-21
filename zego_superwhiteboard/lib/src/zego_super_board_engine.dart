@@ -93,7 +93,7 @@ class ZegoSuperBoardEngine with ZegoSuperBoardView, ZegoSuperBoardSubView {
     return await ZegoSuperBoardImpl.enableResponseScale(enable);
   }
 
-  Future<void> setToolType(int tool) async {
+  Future<void> setToolType(ZegoSuperBoardTool tool) async {
     return await ZegoSuperBoardImpl.setToolType(tool);
   }
 

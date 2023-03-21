@@ -82,3 +82,21 @@ extension ZegoSuperBoardFileTypeExtension on ZegoSuperBoardFileType {
     4096: ZegoSuperBoardFileType.customH5,
   };
 }
+
+extension ZegoSuperBoardOperationModeExtension on ZegoSuperBoardOperationMode {
+  int get id {
+    switch (this) {
+      case ZegoSuperBoardOperationMode.none:return 1;
+      case ZegoSuperBoardOperationMode.draw:return 2;
+      case ZegoSuperBoardOperationMode.scroll:return 4;
+      case ZegoSuperBoardOperationMode.zoom:return 8;
+    }
+  }
+
+  static const valueMap = {
+    1: ZegoSuperBoardOperationMode.none,
+    2: ZegoSuperBoardOperationMode.draw,
+    4: ZegoSuperBoardOperationMode.scroll,
+    8: ZegoSuperBoardOperationMode.zoom,
+  };
+}

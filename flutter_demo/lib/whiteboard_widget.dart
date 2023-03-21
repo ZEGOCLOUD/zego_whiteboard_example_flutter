@@ -16,6 +16,7 @@ class WhiteboardWidget extends StatefulWidget {
 
 class WhiteboardWidgetState extends State<WhiteboardWidget>
     with TickerProviderStateMixin {
+  final isWhiteboardSwitchingNotifier = ValueNotifier<bool>(false);
   final isWhiteboardCreatingNotifier = ValueNotifier<bool>(false);
 
   final currentModelNotifier = ValueNotifier<ZegoSuperBoardSubViewModel?>(null);
@@ -73,7 +74,7 @@ class WhiteboardWidgetState extends State<WhiteboardWidget>
           decoration: BoxDecoration(
             color: Colors.blue.withOpacity(0.2),
           ),
-          child: ValueListenableBuilder(
+          child: ValueListenableBuilder<List<ZegoSuperBoardSubViewModel>>(
             valueListenable: whiteboardListsNotifier,
             builder: (context, whiteboardList, _) {
               return Scrollbar(
@@ -82,49 +83,61 @@ class WhiteboardWidgetState extends State<WhiteboardWidget>
                   itemCount: whiteboardList.length,
                   itemBuilder: (context, index) {
                     final whiteboard = whiteboardList.elementAt(index);
-                    return GestureDetector(
-                      onTap: () {
-                        currentModelNotifier.value = whiteboard;
+                    return ValueListenableBuilder<bool>(
+                        valueListenable: isWhiteboardSwitchingNotifier,
+                        builder: (context, isWhiteboardSwitching, _) {
+                          return GestureDetector(
+                            onTap: isWhiteboardSwitching
+                                ? null
+                                : () {
+                                    isWhiteboardSwitchingNotifier.value = true;
 
-                        ZegoSuperBoardEngine.instance.switchSuperBoardSubView(
-                          whiteboard.uniqueID,
-                        );
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: spaceHeight / 2,
-                        ),
-                        child:
-                            ValueListenableBuilder<ZegoSuperBoardSubViewModel?>(
-                          valueListenable: currentModelNotifier,
-                          builder: (context, currentModel, _) {
-                            return Container(
-                              height: buttonHeight,
+                                    ZegoSuperBoardEngine.instance
+                                        .switchSuperBoardSubView(
+                                      whiteboard.uniqueID,
+                                    )
+                                        .then((value) {
+                                      isWhiteboardSwitchingNotifier.value =
+                                          false;
+                                      currentModelNotifier.value = whiteboard;
+                                    });
+                                  },
+                            child: Padding(
                               padding: const EdgeInsets.symmetric(
-                                horizontal: spaceWidth,
-                                vertical: spaceHeight,
+                                vertical: spaceHeight / 2,
                               ),
-                              decoration: BoxDecoration(
-                                color: whiteboard.uniqueID ==
-                                        currentModel?.uniqueID
-                                    ? Colors.blue
-                                    : Colors.blue.withOpacity(0.1),
-                                border: Border.all(color: Colors.blue),
-                                borderRadius: BorderRadius.circular(10),
+                              child: ValueListenableBuilder<
+                                  ZegoSuperBoardSubViewModel?>(
+                                valueListenable: currentModelNotifier,
+                                builder: (context, currentModel, _) {
+                                  return Container(
+                                    height: buttonHeight,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: spaceWidth,
+                                      vertical: spaceHeight,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: whiteboard.uniqueID ==
+                                              currentModel?.uniqueID
+                                          ? Colors.blue
+                                          : Colors.blue.withOpacity(0.1),
+                                      border: Border.all(color: Colors.blue),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Text(
+                                      whiteboard.name,
+                                      textAlign: TextAlign.center,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  );
+                                },
                               ),
-                              child: Text(
-                                whiteboard.name,
-                                textAlign: TextAlign.center,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    );
+                            ),
+                          );
+                        });
                   },
                 ),
               );
@@ -360,5 +373,98 @@ class WhiteboardWidgetState extends State<WhiteboardWidget>
         .then((result) {
       whiteboardListsNotifier.value = result.subViewModelList;
     });
+  }
+
+  void testAPIs() {
+    currentModelNotifier.value!.flipToNextPage();
+
+    // ZegoSuperBoardEngine.instance.undo();
+    // ZegoSuperBoardEngine.instance.redo();
+    // ZegoSuperBoardEngine.instance.clearCurrentPage();
+    // ZegoSuperBoardEngine.instance.clearAllPage();
+    // ZegoSuperBoardEngine.instance.getVisibleSize().then((value) {
+    //   debugPrint("size :$value");
+    // });
+    // ZegoSuperBoardEngine.instance.clearSelected();
+    // ZegoSuperBoardEngine.instance.flipToPage(1);
+
+    // ZegoSuperBoardEngine.instance.getThumbnailUrlList().then((value) {
+    //   debugPrint("getThumbnailUrlList:$value");
+    // });
+    // ZegoSuperBoardEngine.instance.getModel().then((value) {
+    //   debugPrint("getModel:$value");
+    // });
+    // ZegoSuperBoardEngine.instance.inputText();
+    // ZegoSuperBoardEngine.instance.addText('何时可掇', 0, 0);
+    //
+    // ZegoSuperBoardEngine.instance.getSDKVersion().then((value) {
+    //   debugPrint("version $value");
+    // });
+    // ZegoSuperBoardEngine.instance.clearCache();
+    // ZegoSuperBoardEngine.instance.clear();
+
+    // Future<void> enableRemoteCursorVisible(bool visible) async {
+    //   return await ZegoSuperBoardImpl.enableRemoteCursorVisible(visible);
+    // }
+
+    // ZegoSuperBoardEngine.instance.isCustomCursorEnabled().then((value) {
+    //   debugPrint('isCustomCursorEnabled $value');
+    // });
+    //
+    // ZegoSuperBoardEngine.instance.isEnableResponseScale().then((value) {
+    //   debugPrint('isEnableResponseScale $value');
+    // });
+    //
+    // ZegoSuperBoardEngine.instance.isEnableSyncScale().then((value) {
+    //   debugPrint('isEnableSyncScale $value');
+    // });
+    //
+    // ZegoSuperBoardEngine.instance.isRemoteCursorVisibleEnabled().then((value) {
+    //   debugPrint('isRemoteCursorVisibleEnabled $value');
+    // });
+    // ZegoSuperBoardEngine.instance.querySuperBoardSubViewList().then((value) {
+    //   debugPrint('querySuperBoardSubViewList $value');
+    // });
+    // ZegoSuperBoardEngine.instance.getSuperBoardSubViewModelList().then((value) {
+    //   debugPrint('getSuperBoardSubViewModelList ${value.subViewModelList.map((e) => e.name)}');
+    // });
+    // ZegoSuperBoardEngine.instance.getToolType().then((value) {
+    //   debugPrint('getToolType $value');
+    // });
+    // ZegoSuperBoardEngine.instance.isFontBold().then((value) {
+    //   debugPrint('isFontBold $value');
+    // });
+    // ZegoSuperBoardEngine.instance.isFontItalic().then((value) {
+    //   debugPrint('isFontItalic $value');
+    // });
+    // ZegoSuperBoardEngine.instance.getFontSize().then((value) {
+    //   debugPrint('getFontSize $value');
+    // });
+    ZegoSuperBoardEngine.instance.getBrushSize().then((value) {
+      debugPrint('getBrushSize $value');
+    });
+    // ZegoSuperBoardEngine.instance.getBrushColor() .then((value) {
+    //   debugPrint('getBrushColor $value'); /// todo
+    // });
+    // ZegoSuperBoardEngine.instance.setCustomizedConfig('key_1', 'value_1');
+    //
+    // Future<int> destroySuperBoardSubView(String uniqueID) async {
+    //   return await ZegoSuperBoardImpl.destroySuperBoardSubView(uniqueID);
+    // }
+    // ZegoSuperBoardEngine.instance.setToolType(ZegoSuperBoardTool.rect);
+
+    //
+    // ZegoSuperBoardEngine.instance.enableSyncScale(true);
+    // ZegoSuperBoardEngine.instance.enableResponseScale(true);
+    // ZegoSuperBoardEngine.instance.setFontBold(true);
+    // ZegoSuperBoardEngine.instance.setFontItalic(true);
+    ZegoSuperBoardEngine.instance.setFontSize(10);
+    // ZegoSuperBoardEngine.instance.setBrushSize(50);
+
+    /// not check
+    // ZegoSuperBoardEngine.instance.setBrushColor(int color);
+    // ZegoSuperBoardEngine.instance.setWhiteboardBackgroundColor(0);
+    // ZegoSuperBoardEngine.instance
+    //     .setOperationMode(ZegoSuperBoardOperationMode.none);
   }
 }

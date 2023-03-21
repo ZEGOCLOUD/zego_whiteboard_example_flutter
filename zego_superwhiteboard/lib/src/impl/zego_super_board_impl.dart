@@ -213,9 +213,9 @@ class ZegoSuperBoardImpl {
     });
   }
 
-  static Future<void> setToolType(int tool) async {
+  static Future<void> setToolType(ZegoSuperBoardTool tool) async {
     return await _channel.invokeMethod('setToolType', {
-      'tool': tool,
+      'tool': tool.id,
     });
   }
 
@@ -337,9 +337,9 @@ class ZegoSuperBoardImpl {
     await _channel.invokeMethod('clearAllPage');
   }
 
-  static Future<void> setOperationMode(int mode) async {
+  static Future<void> setOperationMode(ZegoSuperBoardOperationMode mode) async {
     await _channel.invokeMethod('setOperationMode', {
-      'mode': mode,
+      'mode': mode.id,
     });
   }
 

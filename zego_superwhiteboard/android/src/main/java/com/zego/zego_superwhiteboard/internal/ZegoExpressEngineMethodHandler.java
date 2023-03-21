@@ -386,7 +386,7 @@ public class ZegoExpressEngineMethodHandler {
 
     @SuppressWarnings("unused")
     public static void setBrushSize(MethodCall call, Result result) {
-        ZegoSuperBoardManager.getInstance().setBrushSize(ZegoUtils.intValue((Number) call.argument("width")));
+        ZegoSuperBoardManager.getInstance().setBrushSize(ZegoUtils.intValue((Number) call.argument("size")));
 
         result.success(null);
     }

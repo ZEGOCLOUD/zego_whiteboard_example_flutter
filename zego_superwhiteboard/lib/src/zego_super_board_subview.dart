@@ -39,7 +39,7 @@ mixin ZegoSuperBoardSubView {
     await ZegoSuperBoardImpl.clearAllPage();
   }
 
-  Future<void> setOperationMode(int mode) async {
+  Future<void> setOperationMode(ZegoSuperBoardOperationMode mode) async {
     await ZegoSuperBoardImpl.setOperationMode(mode);
   }
 
