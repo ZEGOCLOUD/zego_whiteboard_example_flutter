@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:typed_data';
+import 'dart:io';
 
 import '../zego_superwhiteboard.dart';
 import 'zego_super_board_enum_extension.dart';
@@ -107,9 +108,15 @@ class ZegoSuperBoardSubViewModel {
         ZegoSuperBoardFileTypeExtension.valueMap[params['fileType'] as int] ??
             ZegoSuperBoardFileType.unknown;
     model.uniqueID = params['uniqueID'] ?? '';
-    model.whiteboardIDList = (params['whiteboardIDList'] as List<dynamic>)
-        .map((e) => e as String)
-        .toList();
+    if (Platform.isIOS) {
+      model.whiteboardIDList = (params['whiteboardIDList'] as List<dynamic>)
+          .map((e) => (e as int).toString())
+          .toList();
+    } else {
+      model.whiteboardIDList = (params['whiteboardIDList'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList();
+    }
     return model;
   }
 
