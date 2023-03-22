@@ -364,7 +364,7 @@
 
 - (void)flipToPage:(FlutterMethodCall *)call result:(FlutterResult)result {
     NSDictionary *arguments = call.arguments;
-    int page = [arguments[@"page"]intValue];
+    int page = [arguments[@"targetPage"]intValue];
     [[ZegoSuperBoardManager sharedInstance].superBoardView.currentSuperBoardSubView flipToPage:page complete:^(ZegoSuperBoardError errorCode) {
         result(@{@"errorCode": @(errorCode)});
     }];
