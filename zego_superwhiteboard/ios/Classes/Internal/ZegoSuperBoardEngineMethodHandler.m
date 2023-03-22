@@ -393,8 +393,10 @@
 }
 
 - (void)setWhiteboardBackgroundColor:(FlutterMethodCall *)call result:(FlutterResult)result {
-    
-//    [ZegoSuperBoardManager sharedInstance].superBoardView.currentSuperBoardSubView setWhiteboardBackgroundColor:<#(nonnull UIColor *)#>
+    NSDictionary *arguments = call.arguments;
+    NSString *color = arguments[@"color"];
+    [[ZegoSuperBoardManager sharedInstance].superBoardView.currentSuperBoardSubView setWhiteboardBackgroundColor:[self colorWithHexString:color]];
+    result(nil);
 }
 
 - (UIColor *) colorWithHexString: (NSString *)color
