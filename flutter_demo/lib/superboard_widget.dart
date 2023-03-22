@@ -229,7 +229,6 @@ class SuperBoardWidgetState extends State<SuperBoardWidget>
                   ),
                   child: IconButton(
                     onPressed: () {
-                      testAPIs();
                       currentModel.flipToNextPage();
                     },
                     iconSize: controlButtonSize / 2.0,
