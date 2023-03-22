@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zego_sdk_quick_start/superboard_event_mixin.dart';
 import 'package:zego_superboard/zego_superboard.dart';
 
 const listWidth = 80.0;
@@ -15,7 +16,7 @@ class SuperBoardWidget extends StatefulWidget {
 }
 
 class SuperBoardWidgetState extends State<SuperBoardWidget>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, SuperBoardEventMixin {
   final isWhiteboardSwitchingNotifier = ValueNotifier<bool>(false);
   final isWhiteboardCreatingNotifier = ValueNotifier<bool>(false);
 
@@ -38,11 +39,21 @@ class SuperBoardWidgetState extends State<SuperBoardWidget>
   void initState() {
     super.initState();
 
+    initEventHandler();
+
     ZegoSuperBoardEngine.instance.createSuperBoardView((id) {}).then((value) {
       superBoardViewNotifier.value = value;
     });
 
     syncWhiteboardList();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+
+    uninitEventHandler();
   }
 
   @override
@@ -229,6 +240,7 @@ class SuperBoardWidgetState extends State<SuperBoardWidget>
                   ),
                   child: IconButton(
                     onPressed: () {
+                      testAPIs();
                       currentModel.flipToNextPage();
                     },
                     iconSize: controlButtonSize / 2.0,
@@ -424,6 +436,39 @@ class SuperBoardWidgetState extends State<SuperBoardWidget>
       currentModelNotifier.value = targetWhiteboard;
     });
   }
+
+  @override
+  void onError(int errorCode) {
+    debugPrint('onError: $errorCode');
+  }
+
+  @override
+  void onRemoteSuperBoardSubViewAdded(Map<dynamic, dynamic> subViewModel) {
+    syncWhiteboardList();
+  }
+
+  @override
+  void onRemoteSuperBoardSubViewRemoved(Map<dynamic, dynamic> subViewModel) {
+    syncWhiteboardList();
+  }
+
+  @override
+  void onRemoteSuperBoardSubViewSwitched(String uniqueID) {
+    final queryList = whiteboardListsNotifier.value
+        .where((element) => element.uniqueID == uniqueID)
+        .toList();
+    if (queryList.isNotEmpty) {
+      currentModelNotifier.value = queryList.first;
+    } else {
+      currentModelNotifier.value = null;
+    }
+  }
+
+  @override
+  void onRemoteSuperBoardAuthChanged(Map<String, int> authInfo) {}
+
+  @override
+  void onRemoteSuperBoardGraphicAuthChanged(Map<String, int> authInfo) {}
 
   void testAPIs() {
     // ZegoSuperBoardEngine.instance.undo();
