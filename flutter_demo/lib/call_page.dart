@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'package:zego_express_engine/zego_express_engine.dart';
 import 'package:zego_sdk_quick_start/whiteboard_widget.dart';
+import 'package:zego_superwhiteboard/zego_superwhiteboard.dart';
 
 import 'zegocloud_token.dart';
 import 'constants.dart';
@@ -30,7 +31,7 @@ class _CallPageState extends State<CallPage> {
 
   final cameraStateNotifier = ValueNotifier<bool>(true);
   final microphoneStateNotifier = ValueNotifier<bool>(true);
-  final roomStateNotifier = ValueNotifier<bool>(false);
+  final isWhiteboardReadyNotifier = ValueNotifier<bool>(false);
 
   @override
   void initState() {
@@ -43,6 +44,9 @@ class _CallPageState extends State<CallPage> {
   void dispose() {
     stopListenEvent();
     logoutRoom();
+
+    isWhiteboardReadyNotifier.value = false;
+
     if (localViewID != null) {
       ZegoExpressEngine.instance.destroyCanvasView(localViewID!);
     }
@@ -110,9 +114,9 @@ class _CallPageState extends State<CallPage> {
         width: width,
         height: height,
         child: ValueListenableBuilder<bool>(
-          valueListenable: roomStateNotifier,
-          builder: (context, roomState, _) {
-            return roomState ? const WhiteboardWidget() : Container();
+          valueListenable: isWhiteboardReadyNotifier,
+          builder: (context, isWhiteboardReady, _) {
+            return isWhiteboardReady ? const WhiteboardWidget() : Container();
           },
         ),
       ),
@@ -120,16 +124,19 @@ class _CallPageState extends State<CallPage> {
   }
 
   Widget controlBar() {
+    const spacingWidth = 10.0;
+    const buttonSize = 40.0;
+
     return Positioned(
-      bottom: 5,
+      bottom: spacingWidth,
       left: 0,
       right: 0,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            width: 50,
-            height: 50,
+            width: buttonSize,
+            height: buttonSize,
             decoration: const BoxDecoration(
               shape: BoxShape.circle,
               color: Colors.black,
@@ -145,16 +152,16 @@ class _CallPageState extends State<CallPage> {
                   },
                   icon: Icon(
                     isCameraEnabled ? Icons.camera_alt : Icons.cancel,
-                    size: 32,
                     color: Colors.white,
                   ),
                 );
               },
             ),
           ),
+          const SizedBox(width: spacingWidth),
           Container(
-            width: 50,
-            height: 50,
+            width: buttonSize,
+            height: buttonSize,
             decoration: const BoxDecoration(
               shape: BoxShape.circle,
               color: Colors.red,
@@ -163,14 +170,14 @@ class _CallPageState extends State<CallPage> {
               onPressed: () => Navigator.pop(context),
               icon: const Icon(
                 Icons.call_end,
-                size: 32,
                 color: Colors.white,
               ),
             ),
           ),
+          const SizedBox(width: spacingWidth),
           Container(
-            width: 50,
-            height: 50,
+            width: buttonSize,
+            height: buttonSize,
             decoration: const BoxDecoration(
               shape: BoxShape.circle,
               color: Colors.black,
@@ -187,7 +194,6 @@ class _CallPageState extends State<CallPage> {
                   },
                   icon: Icon(
                     isMicrophoneEnabled ? Icons.mic : Icons.mic_off,
-                    size: 32,
                     color: Colors.white,
                   ),
                 );
@@ -224,6 +230,14 @@ class _CallPageState extends State<CallPage> {
       if (loginRoomResult.errorCode == 0) {
         startPreview();
         startPublish();
+
+        ZegoSuperBoardEngine.instance.init(ZegoSuperBoardInitConfig(
+          appID: appID,
+          appSign: appSign,
+          userID: user.userID,
+        )).then((value) {
+          isWhiteboardReadyNotifier.value = true;
+        });
       } else {
         // Login room failed
       }
@@ -232,6 +246,8 @@ class _CallPageState extends State<CallPage> {
 
   void logoutRoom() {
     ZegoExpressEngine.instance.logoutRoom();
+
+    ZegoSuperBoardEngine.instance.uninit();
   }
 
   void startListenEvent() {
@@ -260,7 +276,6 @@ class _CallPageState extends State<CallPage> {
     // Callback for updates on the current user's room connection status.
     ZegoExpressEngine.onRoomStateUpdate =
         (roomID, state, errorCode, extendedData) {
-      roomStateNotifier.value = state == ZegoRoomState.Connected;
       debugPrint(
           'onRoomStateUpdate: roomID: $roomID, state: ${state.name}, errorCode: $errorCode, extendedData: $extendedData');
     };

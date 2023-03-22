@@ -14,12 +14,6 @@ import 'package:zego_superwhiteboard/zego_superwhiteboard.dart';
 void main() async {
   await createEngine();
 
-  ZegoSuperBoardEngine.instance.init(ZegoSuperBoardInitConfig(
-    appID: appID,
-    appSign: appSign,
-    userID: 'xxx',
-  ));
-
   runApp(const MyApp());
 }
 

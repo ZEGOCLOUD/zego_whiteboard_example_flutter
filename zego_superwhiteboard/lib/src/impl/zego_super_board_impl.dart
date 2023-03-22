@@ -265,14 +265,27 @@ class ZegoSuperBoardImpl {
     return await _channel.invokeMethod('getBrushSize');
   }
 
-  static Future<void> setBrushColor(int color) async {
-    return await _channel.invokeMethod('setBrushColor', {
-      'color': color,
-    });
+  static Future<void> setBrushColor(Color color) async {
+    final hexValue = color.value.toRadixString(16);
+    if (Platform.isIOS) {
+      return await _channel.invokeMethod('setBrushColor', {
+        'color': '0x$hexValue',
+      });
+    } else {
+      return await _channel.invokeMethod('setBrushColor', {
+        'color': int.tryParse(hexValue, radix: 16) ?? 0xFF000000,
+      });
+    }
   }
 
-  static Future<int> getBrushColor() async {
-    return await _channel.invokeMethod('getBrushColor');
+  static Future<Color> getBrushColor() async {
+    final hexValue = await _channel.invokeMethod('getBrushColor');
+    if (Platform.isIOS) {
+      return Color(
+          int.tryParse(hexValue as String? ?? '', radix: 16) ?? 0xFF000000);
+    }
+
+    return Color(hexValue as int? ?? 0xFF000000);
   }
 
   static Future<int> switchSuperBoardSubView(String uniqueID) async {

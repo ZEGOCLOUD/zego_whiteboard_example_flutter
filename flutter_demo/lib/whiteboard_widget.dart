@@ -5,7 +5,7 @@ const listWidth = 80.0;
 const spaceWidth = 5.0;
 const spaceHeight = 5.0;
 const buttonHeight = 30.0;
-const controlButtonWidth = 50.0;
+const controlButtonSize = 30.0;
 
 class WhiteboardWidget extends StatefulWidget {
   const WhiteboardWidget({super.key});
@@ -58,6 +58,7 @@ class WhiteboardWidgetState extends State<WhiteboardWidget>
             currentWhiteboard(),
             currentWhiteboardControls(),
             createControls(constraints.maxWidth, constraints.maxHeight),
+            closeButton(),
           ],
         );
       }),
@@ -141,7 +142,7 @@ class WhiteboardWidgetState extends State<WhiteboardWidget>
       left: spaceWidth + listWidth + spaceWidth,
       right: spaceWidth,
       top: spaceWidth,
-      bottom: buttonHeight + spaceWidth,
+      bottom: controlButtonSize + spaceHeight * 2,
       child: ValueListenableBuilder<Widget?>(
         valueListenable: superBoardViewNotifier,
         builder: (context, superBoardView, _) {
@@ -158,7 +159,7 @@ class WhiteboardWidgetState extends State<WhiteboardWidget>
 
   Widget currentWhiteboardControls() {
     return Positioned(
-      left: listWidth + spaceWidth,
+      left: listWidth + spaceWidth * 2,
       right: spaceWidth,
       bottom: spaceWidth,
       child: ValueListenableBuilder<ZegoSuperBoardSubViewModel?>(
@@ -172,7 +173,7 @@ class WhiteboardWidgetState extends State<WhiteboardWidget>
           currentModel.syncPageCount();
 
           return Container(
-            height: buttonHeight,
+            height: controlButtonSize,
             decoration: BoxDecoration(
               color: Colors.blue.withOpacity(0.2),
             ),
@@ -181,15 +182,19 @@ class WhiteboardWidgetState extends State<WhiteboardWidget>
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
-                  width: controlButtonWidth,
-                  height: buttonHeight,
-                  decoration: const BoxDecoration(
+                  width: controlButtonSize,
+                  height: controlButtonSize,
+                  decoration: BoxDecoration(
                     color: Colors.black,
+                    borderRadius: BorderRadius.circular(
+                      controlButtonSize / 6.0,
+                    ),
                   ),
                   child: IconButton(
                     onPressed: () {
                       currentModel.flipToPrePage();
                     },
+                    iconSize: controlButtonSize / 2.0,
                     icon: const Icon(
                       Icons.skip_previous,
                       color: Colors.white,
@@ -212,16 +217,22 @@ class WhiteboardWidgetState extends State<WhiteboardWidget>
                         }),
                   ],
                 ),
+                const SizedBox(width: spaceWidth),
                 Container(
-                  width: controlButtonWidth,
+                  width: controlButtonSize,
                   height: buttonHeight,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     color: Colors.black,
+                    borderRadius: BorderRadius.circular(
+                      controlButtonSize / 6.0,
+                    ),
                   ),
                   child: IconButton(
                     onPressed: () {
+                      testAPIs();
                       currentModel.flipToNextPage();
                     },
+                    iconSize: controlButtonSize / 2.0,
                     icon: const Icon(
                       Icons.skip_next,
                       color: Colors.white,
@@ -280,6 +291,41 @@ class WhiteboardWidgetState extends State<WhiteboardWidget>
     );
   }
 
+  Widget closeButton() {
+    return Positioned(
+      top: spaceHeight * 2,
+      right: spaceWidth * 2,
+      child: SizedBox(
+        width: controlButtonSize,
+        height: controlButtonSize,
+        child: FloatingActionButton(
+          onPressed: () {
+            final uniqueID = currentModelNotifier.value?.uniqueID ?? '';
+            if (uniqueID.isNotEmpty) {
+              ZegoSuperBoardEngine.instance
+                  .destroySuperBoardSubView(uniqueID)
+                  .then((value) {
+                syncWhiteboardList().then((value) {
+                  if (whiteboardListsNotifier.value.isNotEmpty) {
+                    switchSuperBoardSubView(
+                        whiteboardListsNotifier.value.first);
+                  } else {
+                    currentModelNotifier.value = null;
+                  }
+                });
+              });
+            }
+          },
+          backgroundColor: Colors.black.withOpacity(0.5),
+          child: const Icon(
+            Icons.close,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
+
   void onBlankWBPressed(double whiteboardWidth, double whiteboardHeight) {
     final existedBlankWhiteboardList = whiteboardListsNotifier.value
         .where((element) => element.fileType == ZegoSuperBoardFileType.unknown)
@@ -309,10 +355,10 @@ class WhiteboardWidgetState extends State<WhiteboardWidget>
         return;
       }
 
-      currentModelNotifier.value = result.subViewModel;
       syncWhiteboardList().then((value) {
         isWhiteboardCreatingNotifier.value = false;
       });
+      currentModelNotifier.value = result.subViewModel;
     });
   }
 
@@ -344,10 +390,10 @@ class WhiteboardWidgetState extends State<WhiteboardWidget>
         return;
       }
 
-      currentModelNotifier.value = result.subViewModel;
       syncWhiteboardList().then((value) {
         isWhiteboardCreatingNotifier.value = false;
       });
+      currentModelNotifier.value = result.subViewModel;
     });
   }
 
@@ -381,8 +427,6 @@ class WhiteboardWidgetState extends State<WhiteboardWidget>
   }
 
   void testAPIs() {
-    currentModelNotifier.value!.flipToNextPage();
-
     // ZegoSuperBoardEngine.instance.undo();
     // ZegoSuperBoardEngine.instance.redo();
     // ZegoSuperBoardEngine.instance.clearCurrentPage();
@@ -400,7 +444,7 @@ class WhiteboardWidgetState extends State<WhiteboardWidget>
     //   debugPrint("getModel:$value");
     // });
     // ZegoSuperBoardEngine.instance.inputText();
-    // ZegoSuperBoardEngine.instance.addText('何时可掇', 0, 0);
+    // ZegoSuperBoardEngine.instance.addText('何时可掇', 100, 300);
     //
     // ZegoSuperBoardEngine.instance.getSDKVersion().then((value) {
     //   debugPrint("version $value");
@@ -445,29 +489,27 @@ class WhiteboardWidgetState extends State<WhiteboardWidget>
     // ZegoSuperBoardEngine.instance.getFontSize().then((value) {
     //   debugPrint('getFontSize $value');
     // });
-    ZegoSuperBoardEngine.instance.getBrushSize().then((value) {
-      debugPrint('getBrushSize $value');
-    });
+    // ZegoSuperBoardEngine.instance.getBrushSize().then((value) {
+    //   debugPrint('getBrushSize $value');
+    // });
     // ZegoSuperBoardEngine.instance.getBrushColor() .then((value) {
     //   debugPrint('getBrushColor $value'); /// todo
     // });
     // ZegoSuperBoardEngine.instance.setCustomizedConfig('key_1', 'value_1');
     //
-    // Future<int> destroySuperBoardSubView(String uniqueID) async {
-    //   return await ZegoSuperBoardImpl.destroySuperBoardSubView(uniqueID);
-    // }
+    // ZegoSuperBoardEngine.instance.destroySuperBoardSubView('0abc5ff7294eaf09a147f534bd65135f');
     // ZegoSuperBoardEngine.instance.setToolType(ZegoSuperBoardTool.rect);
+    // ZegoSuperBoardEngine.instance.setFontBold(false);
+    // ZegoSuperBoardEngine.instance.setFontItalic(false);
+    // ZegoSuperBoardEngine.instance.setFontSize(100);
+    // ZegoSuperBoardEngine.instance.setBrushSize(10);
+    // ZegoSuperBoardEngine.instance.setBrushColor(Colors.deepPurple);
 
     //
     // ZegoSuperBoardEngine.instance.enableSyncScale(true);
     // ZegoSuperBoardEngine.instance.enableResponseScale(true);
-    // ZegoSuperBoardEngine.instance.setFontBold(true);
-    // ZegoSuperBoardEngine.instance.setFontItalic(true);
-    ZegoSuperBoardEngine.instance.setFontSize(10);
-    // ZegoSuperBoardEngine.instance.setBrushSize(50);
 
     /// not check
-    // ZegoSuperBoardEngine.instance.setBrushColor(int color);
     // ZegoSuperBoardEngine.instance.setWhiteboardBackgroundColor(0);
     // ZegoSuperBoardEngine.instance
     //     .setOperationMode(ZegoSuperBoardOperationMode.none);

@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'dart:ui';
 import 'package:zego_superwhiteboard/src/zego_super_board_subview.dart';
 
 import '../zego_superwhiteboard.dart';
@@ -133,11 +134,11 @@ class ZegoSuperBoardEngine with ZegoSuperBoardView, ZegoSuperBoardSubView {
     return await ZegoSuperBoardImpl.getBrushSize();
   }
 
-  Future<void> setBrushColor(int color) async {
+  Future<void> setBrushColor(Color color) async {
     return await ZegoSuperBoardImpl.setBrushColor(color);
   }
 
-  Future<int> getBrushColor() async {
+  Future<Color> getBrushColor() async {
     return await ZegoSuperBoardImpl.getBrushColor();
   }
 
