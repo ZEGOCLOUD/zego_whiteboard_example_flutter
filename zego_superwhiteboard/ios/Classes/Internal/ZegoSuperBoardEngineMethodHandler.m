@@ -283,8 +283,8 @@
 
 - (void)setBrushSize:(FlutterMethodCall *)call result:(FlutterResult)result {
     NSDictionary *arguments = call.arguments;
-    NSInteger width = [arguments[@"width"]intValue];
-    [[ZegoSuperBoardManager sharedInstance]setBrushSize:width];
+    NSInteger size = [arguments[@"size"]intValue];
+    [[ZegoSuperBoardManager sharedInstance]setBrushSize:size];
     result(nil);
 }
 
