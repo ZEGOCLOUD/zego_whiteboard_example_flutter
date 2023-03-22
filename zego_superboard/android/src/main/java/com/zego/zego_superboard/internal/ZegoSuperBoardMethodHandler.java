@@ -568,6 +568,7 @@ public class ZegoSuperBoardMethodHandler {
         ZegoSuperBoardManager.getInstance().getSuperBoardView().getCurrentSuperBoardSubView().setWhiteboardBackgroundColor(
                 ZegoUtils.intValue((Number) call.argument("color"))
         );
+        result.success(null);
     }
 
     ////////

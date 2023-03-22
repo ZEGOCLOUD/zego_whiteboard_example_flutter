@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 
 import 'impl/zego_super_board_platform_view_impl.dart';
-import 'zego_super_board_engine.dart';
 import 'impl/zego_super_board_impl.dart';
-import 'zego_super_board_defines.dart';
 
+/// This class mainly realizes the function of switching SuperBoardSubView and Excel file sheet in SuperBoardSubView.
+/// After initializing SDK, You can get the ZegoSuperBoardView object directly using the ZegoSuperBoardManager,
+/// through the outside of the class does not need to deal with the ZegoSuperBoardView switching and synchronization logic,
+/// ZegoSuperBoardView handles the logic for switching synchronised presentations internally.
 mixin ZegoSuperBoardView {
   /// Create a Super Whiteboard Container that manages the lifecycle of switchSuperBoardSubView internally.
   /// @onViewCreated  Callback after the container is created.

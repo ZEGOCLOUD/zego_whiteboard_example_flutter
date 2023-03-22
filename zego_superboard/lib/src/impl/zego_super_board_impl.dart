@@ -1,16 +1,10 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../zego_super_board_engine.dart';
 import '../zego_super_board_defines.dart';
-import '../zego_super_board_enum_extension.dart';
 import '../utils/zego_super_board_utils.dart';
-
-// ignore_for_file: deprecated_member_use_from_same_package, curly_braces_in_flow_control_structures
 
 class Global {
   static String pluginVersion = "0.0.1";
@@ -394,21 +388,17 @@ class ZegoSuperBoardImpl {
     return result['errorCode'];
   }
 
-  static Future<int> setWhiteboardBackgroundColor(Color color) async {
-    Map<dynamic, dynamic> result = {};
-
+  static Future<void> setWhiteboardBackgroundColor(Color color) async {
     if (Platform.isIOS) {
-      result = await _channel.invokeMethod('setWhiteboardBackgroundColor', {
+      await _channel.invokeMethod('setWhiteboardBackgroundColor', {
         'color': '0x${color.value.toRadixString(16).substring(2)}',
       });
     } else {
-      result = await _channel.invokeMethod('setWhiteboardBackgroundColor', {
+      await _channel.invokeMethod('setWhiteboardBackgroundColor', {
         'color': int.tryParse(color.value.toRadixString(16), radix: 16) ??
             0xFF000000,
       });
     }
-
-    return result['errorCode'];
   }
 
   /// EventHandler
@@ -431,28 +421,35 @@ class ZegoSuperBoardImpl {
         break;
       case 'onRemoteSuperBoardSubViewAdded':
         if (ZegoSuperBoardEngine.onRemoteSuperBoardSubViewAdded == null) return;
-        ZegoSuperBoardEngine
-            .onRemoteSuperBoardSubViewAdded!(map['subViewModel']);
+        ZegoSuperBoardEngine.onRemoteSuperBoardSubViewAdded!(
+            ZegoSuperBoardSubViewModel.fromMap(
+                map['subViewModel'] as Map<dynamic, dynamic>));
         break;
       case 'onRemoteSuperBoardSubViewRemoved':
-        if (ZegoSuperBoardEngine.onRemoteSuperBoardSubViewRemoved == null)
+        if (ZegoSuperBoardEngine.onRemoteSuperBoardSubViewRemoved == null) {
           return;
-        ZegoSuperBoardEngine
-            .onRemoteSuperBoardSubViewRemoved!(map['subViewModel']);
+        }
+        ZegoSuperBoardEngine.onRemoteSuperBoardSubViewRemoved!(
+            ZegoSuperBoardSubViewModel.fromMap(
+                map['subViewModel'] as Map<dynamic, dynamic>));
         break;
       case 'onRemoteSuperBoardSubViewSwitched':
-        if (ZegoSuperBoardEngine.onRemoteSuperBoardSubViewSwitched == null)
+        if (ZegoSuperBoardEngine.onRemoteSuperBoardSubViewSwitched == null) {
           return;
+        }
         ZegoSuperBoardEngine
             .onRemoteSuperBoardSubViewSwitched!(map['uniqueID']);
         break;
       case 'onRemoteSuperBoardAuthChanged':
-        if (ZegoSuperBoardEngine.onRemoteSuperBoardAuthChanged == null) return;
+        if (ZegoSuperBoardEngine.onRemoteSuperBoardAuthChanged == null) {
+          return;
+        }
         ZegoSuperBoardEngine.onRemoteSuperBoardAuthChanged!(map['authInfo']);
         break;
       case 'onRemoteSuperBoardGraphicAuthChanged':
-        if (ZegoSuperBoardEngine.onRemoteSuperBoardGraphicAuthChanged == null)
+        if (ZegoSuperBoardEngine.onRemoteSuperBoardGraphicAuthChanged == null) {
           return;
+        }
         ZegoSuperBoardEngine
             .onRemoteSuperBoardGraphicAuthChanged!(map['authInfo']);
         break;

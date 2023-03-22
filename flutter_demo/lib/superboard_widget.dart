@@ -17,11 +17,12 @@ class SuperBoardWidget extends StatefulWidget {
 
 class SuperBoardWidgetState extends State<SuperBoardWidget>
     with TickerProviderStateMixin, SuperBoardEventMixin {
-  final isWhiteboardSwitchingNotifier = ValueNotifier<bool>(false);
-  final isWhiteboardCreatingNotifier = ValueNotifier<bool>(false);
+  final isBoardSwitchingNotifier = ValueNotifier<bool>(false);
+  final isBoardCreatingNotifier = ValueNotifier<bool>(false);
 
-  final currentModelNotifier = ValueNotifier<ZegoSuperBoardSubViewModel?>(null);
-  final whiteboardListsNotifier =
+  final currentBoardModelNotifier =
+      ValueNotifier<ZegoSuperBoardSubViewModel?>(null);
+  final boardListsNotifier =
       ValueNotifier<List<ZegoSuperBoardSubViewModel>>([]);
 
   final superBoardViewNotifier = ValueNotifier<Widget?>(null);
@@ -30,7 +31,7 @@ class SuperBoardWidgetState extends State<SuperBoardWidget>
         color: Colors.blue.withOpacity(0.5),
       );
 
-  int get blankWBCount => whiteboardListsNotifier.value
+  int get blankBoardCount => boardListsNotifier.value
       .where((element) => element.fileType == ZegoSuperBoardFileType.unknown)
       .toList()
       .length;
@@ -45,12 +46,15 @@ class SuperBoardWidgetState extends State<SuperBoardWidget>
       superBoardViewNotifier.value = value;
     });
 
-    syncWhiteboardList();
+    syncWhiteboardList().then((value) {
+      if (boardListsNotifier.value.isNotEmpty) {
+        syncCurrentModel();
+      }
+    });
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
 
     uninitEventHandler();
@@ -65,10 +69,10 @@ class SuperBoardWidgetState extends State<SuperBoardWidget>
       child: LayoutBuilder(builder: (context, constraints) {
         return Stack(
           children: [
-            whiteboardList(),
+            boardList(),
             currentWhiteboard(),
             currentWhiteboardControls(),
-            createControls(constraints.maxWidth, constraints.maxHeight),
+            createBoardControls(constraints.maxWidth, constraints.maxHeight),
             closeButton(),
           ],
         );
@@ -76,76 +80,88 @@ class SuperBoardWidgetState extends State<SuperBoardWidget>
     );
   }
 
-  Widget whiteboardList() {
+  Widget boardList() {
     return Positioned(
-        left: spaceWidth,
-        top: spaceWidth,
-        bottom: 2 * buttonHeight + 3 * spaceHeight,
-        child: Container(
-          width: listWidth,
-          decoration: BoxDecoration(
-            color: Colors.blue.withOpacity(0.2),
-          ),
-          child: ValueListenableBuilder<List<ZegoSuperBoardSubViewModel>>(
-            valueListenable: whiteboardListsNotifier,
-            builder: (context, whiteboardList, _) {
-              return Scrollbar(
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: whiteboardList.length,
-                  itemBuilder: (context, index) {
-                    final whiteboard = whiteboardList.elementAt(index);
-                    return ValueListenableBuilder<bool>(
-                        valueListenable: isWhiteboardSwitchingNotifier,
-                        builder: (context, isWhiteboardSwitching, _) {
-                          return GestureDetector(
-                            onTap: isWhiteboardSwitching
-                                ? null
-                                : () {
-                                    switchSuperBoardSubView(whiteboard);
-                                  },
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: spaceHeight / 2,
-                              ),
-                              child: ValueListenableBuilder<
-                                  ZegoSuperBoardSubViewModel?>(
-                                valueListenable: currentModelNotifier,
-                                builder: (context, currentModel, _) {
-                                  return Container(
-                                    height: buttonHeight,
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: spaceWidth,
-                                      vertical: spaceHeight,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: whiteboard.uniqueID ==
-                                              currentModel?.uniqueID
-                                          ? Colors.blue
-                                          : Colors.blue.withOpacity(0.1),
-                                      border: Border.all(color: Colors.blue),
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: Text(
-                                      whiteboard.name,
-                                      textAlign: TextAlign.center,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          );
-                        });
-                  },
-                ),
+      left: spaceWidth,
+      top: spaceWidth,
+      bottom: 2 * buttonHeight + 3 * spaceHeight,
+      child: Container(
+        width: listWidth,
+        decoration: BoxDecoration(
+          color: Colors.blue.withOpacity(0.2),
+        ),
+        child: boardListView(),
+      ),
+    );
+  }
+
+  Widget boardListView() {
+    return ValueListenableBuilder<List<ZegoSuperBoardSubViewModel>>(
+      valueListenable: boardListsNotifier,
+      builder: (context, boardList, _) {
+        return Scrollbar(
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: boardList.length,
+            itemBuilder: (context, index) {
+              final board = boardList.elementAt(index);
+              return ValueListenableBuilder<bool>(
+                valueListenable: isBoardSwitchingNotifier,
+                builder: (context, isWhiteboardSwitching, _) {
+                  return GestureDetector(
+                    onTap: isWhiteboardSwitching
+                        ? null
+                        : () {
+                            switchSuperBoardSubView(board);
+                          },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: spaceHeight / 2,
+                      ),
+                      child:
+                          ValueListenableBuilder<ZegoSuperBoardSubViewModel?>(
+                        valueListenable: currentBoardModelNotifier,
+                        builder: (context, currentModel, _) {
+                          return boardListButton(board, currentModel);
+                        },
+                      ),
+                    ),
+                  );
+                },
               );
             },
           ),
-        ));
+        );
+      },
+    );
+  }
+
+  Widget boardListButton(
+    ZegoSuperBoardSubViewModel listWhiteboard,
+    ZegoSuperBoardSubViewModel? currentModel,
+  ) {
+    return Container(
+      height: buttonHeight,
+      padding: const EdgeInsets.symmetric(
+        horizontal: spaceWidth,
+        vertical: spaceHeight,
+      ),
+      decoration: BoxDecoration(
+        color: listWhiteboard.uniqueID == currentModel?.uniqueID
+            ? Colors.blue
+            : Colors.blue.withOpacity(0.1),
+        border: Border.all(color: Colors.blue),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Text(
+        listWhiteboard.name,
+        textAlign: TextAlign.center,
+        overflow: TextOverflow.ellipsis,
+        style: const TextStyle(
+          fontSize: 12,
+        ),
+      ),
+    );
   }
 
   Widget currentWhiteboard() {
@@ -174,7 +190,7 @@ class SuperBoardWidgetState extends State<SuperBoardWidget>
       right: spaceWidth,
       bottom: spaceWidth,
       child: ValueListenableBuilder<ZegoSuperBoardSubViewModel?>(
-        valueListenable: currentModelNotifier,
+        valueListenable: currentBoardModelNotifier,
         builder: (context, currentModel, _) {
           if (null == currentModel) {
             return Container();
@@ -192,63 +208,22 @@ class SuperBoardWidgetState extends State<SuperBoardWidget>
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Container(
-                  width: controlButtonSize,
-                  height: controlButtonSize,
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                    borderRadius: BorderRadius.circular(
-                      controlButtonSize / 6.0,
-                    ),
-                  ),
-                  child: IconButton(
-                    onPressed: () {
-                      currentModel.flipToPrePage();
-                    },
-                    iconSize: controlButtonSize / 2.0,
-                    icon: const Icon(
-                      Icons.skip_previous,
-                      color: Colors.white,
-                    ),
-                  ),
+                boardControlButton(
+                  currentModel: currentModel,
+                  iconData: Icons.skip_previous,
+                  onPressed: () {
+                    currentModel.flipToPrePage();
+                  },
                 ),
                 const SizedBox(width: spaceWidth),
-                Row(
-                  children: [
-                    ValueListenableBuilder<int>(
-                        valueListenable: currentModel.currentPageNotifier,
-                        builder: (context, currentPage, _) {
-                          return Text('$currentPage');
-                        }),
-                    const Text("/"),
-                    ValueListenableBuilder<int>(
-                        valueListenable: currentModel.pageCountNotifier,
-                        builder: (context, pageCount, _) {
-                          return Text('$pageCount');
-                        }),
-                  ],
-                ),
+                boardPageInfo(currentModel),
                 const SizedBox(width: spaceWidth),
-                Container(
-                  width: controlButtonSize,
-                  height: buttonHeight,
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                    borderRadius: BorderRadius.circular(
-                      controlButtonSize / 6.0,
-                    ),
-                  ),
-                  child: IconButton(
-                    onPressed: () {
-                      testAPIs();
-                      currentModel.flipToNextPage();
-                    },
-                    iconSize: controlButtonSize / 2.0,
-                    icon: const Icon(
-                      Icons.skip_next,
-                      color: Colors.white,
-                    ),
-                  ),
+                boardControlButton(
+                  currentModel: currentModel,
+                  iconData: Icons.skip_next,
+                  onPressed: () {
+                    currentModel.flipToNextPage();
+                  },
                 ),
               ],
             ),
@@ -258,7 +233,52 @@ class SuperBoardWidgetState extends State<SuperBoardWidget>
     );
   }
 
-  Widget createControls(double whiteboardWidth, double whiteboardHeight) {
+  Widget boardPageInfo(ZegoSuperBoardSubViewModel currentModel) {
+    return Row(
+      children: [
+        ValueListenableBuilder<int>(
+          valueListenable: currentModel.currentPageNotifier,
+          builder: (context, currentPage, _) {
+            return Text('$currentPage');
+          },
+        ),
+        const Text("/"),
+        ValueListenableBuilder<int>(
+          valueListenable: currentModel.pageCountNotifier,
+          builder: (context, pageCount, _) {
+            return Text('$pageCount');
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget boardControlButton({
+    required ZegoSuperBoardSubViewModel currentModel,
+    required IconData? iconData,
+    required VoidCallback? onPressed,
+  }) {
+    return Container(
+      width: controlButtonSize,
+      height: buttonHeight,
+      decoration: BoxDecoration(
+        color: Colors.black,
+        borderRadius: BorderRadius.circular(
+          controlButtonSize / 6.0,
+        ),
+      ),
+      child: IconButton(
+        onPressed: onPressed,
+        iconSize: controlButtonSize / 2.0,
+        icon: Icon(
+          iconData,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+
+  Widget createBoardControls(double boardWidth, double boardHeight) {
     return Positioned(
       left: spaceWidth,
       bottom: spaceWidth,
@@ -268,13 +288,13 @@ class SuperBoardWidgetState extends State<SuperBoardWidget>
             width: listWidth,
             height: buttonHeight,
             child: ValueListenableBuilder<bool>(
-              valueListenable: isWhiteboardCreatingNotifier,
+              valueListenable: isBoardCreatingNotifier,
               builder: (context, isWhiteboardCreating, _) {
                 return OutlinedButton(
                     onPressed: isWhiteboardCreating
                         ? null
                         : () {
-                            onBlankWBPressed(whiteboardWidth, whiteboardHeight);
+                            onBlankWBPressed(boardWidth, boardHeight);
                           },
                     child: const Text("Blank"));
               },
@@ -285,13 +305,13 @@ class SuperBoardWidgetState extends State<SuperBoardWidget>
             width: listWidth,
             height: buttonHeight,
             child: ValueListenableBuilder<bool>(
-              valueListenable: isWhiteboardCreatingNotifier,
+              valueListenable: isBoardCreatingNotifier,
               builder: (context, isWhiteboardCreating, _) {
                 return OutlinedButton(
                     onPressed: isWhiteboardCreating
                         ? null
                         : () {
-                            onFileWBPressed(whiteboardWidth, whiteboardHeight);
+                            onFileWBPressed(boardWidth, boardHeight);
                           },
                     child: const Text("File"));
               },
@@ -311,19 +331,19 @@ class SuperBoardWidgetState extends State<SuperBoardWidget>
         height: controlButtonSize,
         child: FloatingActionButton(
           onPressed: () {
-            final uniqueID = currentModelNotifier.value?.uniqueID ?? '';
+            final uniqueID = currentBoardModelNotifier.value?.uniqueID ?? '';
             if (uniqueID.isNotEmpty) {
               ZegoSuperBoardEngine.instance
                   .destroySuperBoardSubView(uniqueID)
                   .then((value) {
-                syncWhiteboardList().then((value) {
-                  if (whiteboardListsNotifier.value.isNotEmpty) {
-                    switchSuperBoardSubView(
-                        whiteboardListsNotifier.value.first);
-                  } else {
-                    currentModelNotifier.value = null;
-                  }
-                });
+                boardListsNotifier.value = boardListsNotifier.value
+                    .where((model) => model.uniqueID != uniqueID)
+                    .toList();
+                if (boardListsNotifier.value.isNotEmpty) {
+                  switchSuperBoardSubView(boardListsNotifier.value.first);
+                } else {
+                  currentBoardModelNotifier.value = null;
+                }
               });
             }
           },
@@ -337,46 +357,57 @@ class SuperBoardWidgetState extends State<SuperBoardWidget>
     );
   }
 
-  void onBlankWBPressed(double whiteboardWidth, double whiteboardHeight) {
-    final existedBlankWhiteboardList = whiteboardListsNotifier.value
+  void onBlankWBPressed(double boardWidth, double boardHeight) {
+    final existedBlankWhiteboardList = boardListsNotifier.value
         .where((element) => element.fileType == ZegoSuperBoardFileType.unknown)
         .toList();
     if (existedBlankWhiteboardList.isNotEmpty) {
-      /// blank whiteboard is exist, not create anymore, switch
+      /// blank board is exist, not create anymore, switch
       switchSuperBoardSubView(existedBlankWhiteboardList.first);
 
       return;
     }
 
-    if (isWhiteboardCreatingNotifier.value) {
+    if (isBoardCreatingNotifier.value) {
       return;
     }
-    isWhiteboardCreatingNotifier.value = true;
+    isBoardCreatingNotifier.value = true;
 
     ZegoSuperBoardEngine.instance
         .createWhiteboardView(ZegoCreateWhiteboardConfig(
-      name: 'Blank_$blankWBCount',
-      perPageWidth: whiteboardWidth.toInt(),
-      perPageHeight: whiteboardHeight.toInt(),
+      name: 'Blank_$blankBoardCount',
+      perPageWidth: boardWidth.toInt(),
+      perPageHeight: boardHeight.toInt(),
       pageCount: 1,
     ))
         .then((result) {
       if (0 != result.errorCode) {
-        debugPrint("create normal whiteboard error, ${result.errorCode}");
+        debugPrint("create normal board error, ${result.errorCode}");
         return;
       }
 
-      syncWhiteboardList().then((value) {
-        isWhiteboardCreatingNotifier.value = false;
-      });
-      currentModelNotifier.value = result.subViewModel;
+      if (null != result.subViewModel) {
+        isBoardCreatingNotifier.value = false;
+
+        boardListsNotifier.value = [
+          ...boardListsNotifier.value,
+          result.subViewModel!
+        ];
+        currentBoardModelNotifier.value = result.subViewModel;
+      } else {
+        /// force sync list
+        syncWhiteboardList().then((value) {
+          isBoardCreatingNotifier.value = false;
+        });
+        currentBoardModelNotifier.value = result.subViewModel;
+      }
     });
   }
 
   void onFileWBPressed(double width, double height) {
     const targetFileID = 'ppEoHhuIKVP7WYoK';
 
-    final existedWhiteboardList = whiteboardListsNotifier.value
+    final existedWhiteboardList = boardListsNotifier.value
         .where((element) => element.fileID == targetFileID)
         .toList();
     if (existedWhiteboardList.isNotEmpty) {
@@ -386,10 +417,10 @@ class SuperBoardWidgetState extends State<SuperBoardWidget>
       return;
     }
 
-    if (isWhiteboardCreatingNotifier.value) {
+    if (isBoardCreatingNotifier.value) {
       return;
     }
-    isWhiteboardCreatingNotifier.value = true;
+    isBoardCreatingNotifier.value = true;
 
     ZegoSuperBoardEngine.instance
         .createFileView(ZegoCreateFileConfig(
@@ -397,14 +428,25 @@ class SuperBoardWidgetState extends State<SuperBoardWidget>
     ))
         .then((result) {
       if (0 != result.errorCode) {
-        debugPrint("create file whiteboard error, ${result.errorCode}");
+        debugPrint("create file board error, ${result.errorCode}");
         return;
       }
 
-      syncWhiteboardList().then((value) {
-        isWhiteboardCreatingNotifier.value = false;
-      });
-      currentModelNotifier.value = result.subViewModel;
+      if (null != result.subViewModel) {
+        isBoardCreatingNotifier.value = false;
+
+        boardListsNotifier.value = [
+          ...boardListsNotifier.value,
+          result.subViewModel!
+        ];
+        currentBoardModelNotifier.value = result.subViewModel;
+      } else {
+        /// force sync list
+        syncWhiteboardList().then((value) {
+          isBoardCreatingNotifier.value = false;
+        });
+        currentBoardModelNotifier.value = result.subViewModel;
+      }
     });
   }
 
@@ -412,18 +454,24 @@ class SuperBoardWidgetState extends State<SuperBoardWidget>
     await ZegoSuperBoardEngine.instance
         .querySuperBoardSubViewList()
         .then((result) {
-      whiteboardListsNotifier.value = result.subViewModelList;
+      boardListsNotifier.value = result.subViewModelList;
+    });
+  }
+
+  Future<void> syncCurrentModel() async {
+    ZegoSuperBoardEngine.instance.getModel().then((model) {
+      currentBoardModelNotifier.value = model;
     });
   }
 
   void switchSuperBoardSubView(ZegoSuperBoardSubViewModel targetWhiteboard) {
     debugPrint("switchSuperBoardSubView ${targetWhiteboard.name} 1");
-    if (isWhiteboardSwitchingNotifier.value) {
+    if (isBoardSwitchingNotifier.value) {
       debugPrint("switchSuperBoardSubView ${targetWhiteboard.name} 2");
       return;
     }
 
-    isWhiteboardSwitchingNotifier.value = true;
+    isBoardSwitchingNotifier.value = true;
 
     debugPrint("switchSuperBoardSubView ${targetWhiteboard.name} 3");
     ZegoSuperBoardEngine.instance
@@ -432,130 +480,37 @@ class SuperBoardWidgetState extends State<SuperBoardWidget>
     )
         .then((value) {
       debugPrint("switchSuperBoardSubView ${targetWhiteboard.name} 4");
-      isWhiteboardSwitchingNotifier.value = false;
-      currentModelNotifier.value = targetWhiteboard;
+      isBoardSwitchingNotifier.value = false;
+      currentBoardModelNotifier.value = targetWhiteboard;
     });
   }
 
   @override
-  void onError(int errorCode) {
-    debugPrint('onError: $errorCode');
+  void onRemoteSuperBoardSubViewAdded(ZegoSuperBoardSubViewModel subViewModel) {
+    boardListsNotifier.value = [...boardListsNotifier.value, subViewModel];
+
+    syncCurrentModel();
   }
 
   @override
-  void onRemoteSuperBoardSubViewAdded(Map<dynamic, dynamic> subViewModel) {
-    syncWhiteboardList();
-  }
+  void onRemoteSuperBoardSubViewRemoved(
+      ZegoSuperBoardSubViewModel subViewModel) {
+    boardListsNotifier.value = boardListsNotifier.value
+        .where((model) => model.uniqueID != subViewModel.uniqueID)
+        .toList();
 
-  @override
-  void onRemoteSuperBoardSubViewRemoved(Map<dynamic, dynamic> subViewModel) {
-    syncWhiteboardList();
+    syncCurrentModel();
   }
 
   @override
   void onRemoteSuperBoardSubViewSwitched(String uniqueID) {
-    final queryList = whiteboardListsNotifier.value
+    final queryList = boardListsNotifier.value
         .where((element) => element.uniqueID == uniqueID)
         .toList();
     if (queryList.isNotEmpty) {
-      currentModelNotifier.value = queryList.first;
+      currentBoardModelNotifier.value = queryList.first;
     } else {
-      currentModelNotifier.value = null;
+      currentBoardModelNotifier.value = null;
     }
-  }
-
-  @override
-  void onRemoteSuperBoardAuthChanged(Map<String, int> authInfo) {}
-
-  @override
-  void onRemoteSuperBoardGraphicAuthChanged(Map<String, int> authInfo) {}
-
-  void testAPIs() {
-    // ZegoSuperBoardEngine.instance.undo();
-    // ZegoSuperBoardEngine.instance.redo();
-    // ZegoSuperBoardEngine.instance.clearCurrentPage();
-    // ZegoSuperBoardEngine.instance.clearAllPage();
-    // ZegoSuperBoardEngine.instance.getVisibleSize().then((value) {
-    //   debugPrint("size :$value");
-    // });
-    // ZegoSuperBoardEngine.instance.clearSelected();
-    // ZegoSuperBoardEngine.instance.flipToPage(1);
-
-    // ZegoSuperBoardEngine.instance.getThumbnailUrlList().then((value) {
-    //   debugPrint("getThumbnailUrlList:$value");
-    // });
-    // ZegoSuperBoardEngine.instance.getModel().then((value) {
-    //   debugPrint("getModel:$value");
-    // });
-    // ZegoSuperBoardEngine.instance.inputText();
-    // ZegoSuperBoardEngine.instance.addText('何时可掇', 100, 300);
-    //
-    // ZegoSuperBoardEngine.instance.getSDKVersion().then((value) {
-    //   debugPrint("version $value");
-    // });
-    // ZegoSuperBoardEngine.instance.clearCache();
-    // ZegoSuperBoardEngine.instance.clear();
-
-    // Future<void> enableRemoteCursorVisible(bool visible) async {
-    //   return await ZegoSuperBoardImpl.enableRemoteCursorVisible(visible);
-    // }
-
-    // ZegoSuperBoardEngine.instance.isCustomCursorEnabled().then((value) {
-    //   debugPrint('isCustomCursorEnabled $value');
-    // });
-    //
-    // ZegoSuperBoardEngine.instance.isEnableResponseScale().then((value) {
-    //   debugPrint('isEnableResponseScale $value');
-    // });
-    //
-    // ZegoSuperBoardEngine.instance.isEnableSyncScale().then((value) {
-    //   debugPrint('isEnableSyncScale $value');
-    // });
-    //
-    // ZegoSuperBoardEngine.instance.isRemoteCursorVisibleEnabled().then((value) {
-    //   debugPrint('isRemoteCursorVisibleEnabled $value');
-    // });
-    // ZegoSuperBoardEngine.instance.querySuperBoardSubViewList().then((value) {
-    //   debugPrint('querySuperBoardSubViewList $value');
-    // });
-    // ZegoSuperBoardEngine.instance.getSuperBoardSubViewModelList().then((value) {
-    //   debugPrint('getSuperBoardSubViewModelList ${value.subViewModelList.map((e) => e.name)}');
-    // });
-    // ZegoSuperBoardEngine.instance.getToolType().then((value) {
-    //   debugPrint('getToolType $value');
-    // });
-    // ZegoSuperBoardEngine.instance.isFontBold().then((value) {
-    //   debugPrint('isFontBold $value');
-    // });
-    // ZegoSuperBoardEngine.instance.isFontItalic().then((value) {
-    //   debugPrint('isFontItalic $value');
-    // });
-    // ZegoSuperBoardEngine.instance.getFontSize().then((value) {
-    //   debugPrint('getFontSize $value');
-    // });
-    // ZegoSuperBoardEngine.instance.getBrushSize().then((value) {
-    //   debugPrint('getBrushSize $value');
-    // });
-    // ZegoSuperBoardEngine.instance.setCustomizedConfig('key_1', 'value_1');
-    //
-    // ZegoSuperBoardEngine.instance.destroySuperBoardSubView('0abc5ff7294eaf09a147f534bd65135f');
-    // ZegoSuperBoardEngine.instance.setToolType(ZegoSuperBoardTool.selector);
-    // ZegoSuperBoardEngine.instance.setFontBold(false);
-    // ZegoSuperBoardEngine.instance.setFontItalic(false);
-    // ZegoSuperBoardEngine.instance.setFontSize(100);
-    // ZegoSuperBoardEngine.instance.setBrushSize(10);
-    // ZegoSuperBoardEngine.instance.setBrushColor(Colors.deepPurple);
-    // ZegoSuperBoardEngine.instance.setWhiteboardBackgroundColor(Colors.red);
-
-    //
-    // ZegoSuperBoardEngine.instance.enableSyncScale(true);
-    // ZegoSuperBoardEngine.instance.enableResponseScale(true);
-
-    /// not check
-    // ZegoSuperBoardEngine.instance.getBrushColor() .then((value) {
-    //   debugPrint('getBrushColor $value'); /// todo
-    // });
-    // ZegoSuperBoardEngine.instance
-    //     .setOperationMode(ZegoSuperBoardOperationMode.none);
   }
 }

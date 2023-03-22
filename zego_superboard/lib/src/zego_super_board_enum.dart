@@ -24,6 +24,7 @@ enum ZegoSuperBoardTool {
   customImage, //  (512)
 }
 
+/// File type definition
 enum ZegoSuperBoardFileType {
   unknown, // (0)
   ppt, // (1)

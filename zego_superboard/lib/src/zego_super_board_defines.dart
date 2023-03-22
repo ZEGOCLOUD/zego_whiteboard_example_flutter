@@ -119,6 +119,13 @@ class ZegoSuperBoardSubViewModel {
     this.whiteboardIDList = const [],
   });
 
+  @override
+  String toString() {
+    return '[ZegoSuperBoardSubViewModel] name:$name, '
+        'fileID:$fileID, fileType:$fileType, uniqueID:$uniqueID, '
+        'whiteboardIDList:$whiteboardIDList';
+  }
+
   static ZegoSuperBoardSubViewModel fromMap(Map<dynamic, dynamic> params) {
     final model = ZegoSuperBoardSubViewModel();
     model.name = params['name'] ?? '';

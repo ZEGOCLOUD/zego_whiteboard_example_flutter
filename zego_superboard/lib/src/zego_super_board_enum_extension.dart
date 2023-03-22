@@ -1,4 +1,4 @@
-import 'zego_super_board_defines.dart';
+import 'zego_super_board_enum.dart';
 
 extension ZegoSuperBoardToolExtension on ZegoSuperBoardTool {
   int get id {

@@ -25,15 +25,24 @@ mixin SuperBoardEventMixin {
     ZegoSuperBoardEngine.onRemoteSuperBoardGraphicAuthChanged = null;
   }
 
-  void onError(int errorCode) {}
+  void onError(int errorCode) {
+    debugPrint('onError errorCode:$errorCode');
+  }
 
-  void onRemoteSuperBoardSubViewAdded(Map<dynamic, dynamic> subViewModel) {}
+  void onRemoteSuperBoardSubViewAdded(ZegoSuperBoardSubViewModel subViewModel) {
+    debugPrint("onRemoteSuperBoardSubViewAdded ${subViewModel.toString()}");
+  }
 
-  void onRemoteSuperBoardSubViewRemoved(Map<dynamic, dynamic> subViewModel) {}
+  void onRemoteSuperBoardSubViewRemoved(
+      ZegoSuperBoardSubViewModel subViewModel) {
+    debugPrint("onRemoteSuperBoardSubViewRemoved ${subViewModel.toString()}");
+  }
 
-  void onRemoteSuperBoardSubViewSwitched(String uniqueID) {}
+  void onRemoteSuperBoardSubViewSwitched(String uniqueID) {
+    debugPrint('onRemoteSuperBoardSubViewSwitched uniqueID:$uniqueID');
+  }
 
-  void onRemoteSuperBoardAuthChanged(Map<String, int> authInfo) {}
+  void onRemoteSuperBoardAuthChanged(Map<dynamic, dynamic> authInfo) {}
 
-  void onRemoteSuperBoardGraphicAuthChanged(Map<String, int> authInfo) {}
+  void onRemoteSuperBoardGraphicAuthChanged(Map<dynamic, dynamic> authInfo) {}
 }

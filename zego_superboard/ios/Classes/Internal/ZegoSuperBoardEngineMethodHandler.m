@@ -348,23 +348,13 @@
 
 - (void)setOperationMode:(FlutterMethodCall *)call result:(FlutterResult)result {
     NSDictionary *arguments = call.arguments;
-    NSInteger modelValue = [arguments[@"mode"]intValue];
-    ZegoSuperBoardOperationMode operationModel = ZegoSuperBoardOperationModeNone;
-    if (modelValue == 1) {
-        operationModel = ZegoSuperBoardOperationModeNone;
-    } else if (modelValue == 2) {
-        operationModel = ZegoSuperBoardOperationModeDraw;
-    } else if (modelValue == 4) {
-        operationModel = ZegoSuperBoardOperationModeScroll;
-    } else if (modelValue == 8) {
-        operationModel = ZegoSuperBoardOperationModeZoom;
-    }
-    [[ZegoSuperBoardManager sharedInstance].superBoardView.currentSuperBoardSubView setOperationMode:operationModel];
+    ZegoSuperBoardOperationMode model = [arguments[@"mode"]intValue];
+    [[ZegoSuperBoardManager sharedInstance].superBoardView.currentSuperBoardSubView setOperationMode:model];
 }
 
 - (void)flipToPage:(FlutterMethodCall *)call result:(FlutterResult)result {
     NSDictionary *arguments = call.arguments;
-    int page = [arguments[@"targetPage"]intValue];
+    int page = [arguments[@"page"]intValue];
     [[ZegoSuperBoardManager sharedInstance].superBoardView.currentSuperBoardSubView flipToPage:page complete:^(ZegoSuperBoardError errorCode) {
         result(@{@"errorCode": @(errorCode)});
     }];
