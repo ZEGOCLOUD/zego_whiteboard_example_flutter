@@ -229,7 +229,6 @@ class WhiteboardWidgetState extends State<WhiteboardWidget>
                   ),
                   child: IconButton(
                     onPressed: () {
-                      testAPIs();
                       currentModel.flipToNextPage();
                     },
                     iconSize: controlButtonSize / 2.0,
