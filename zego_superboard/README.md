@@ -1,23 +1,11 @@
-# zego_superwhiteboard
+# zego_superboard
 
-
-
-## Getting Started
-
-This project is a starting point for a Flutter
-[plug-in package](https://flutter.dev/developing-packages/),
-a specialized package that includes platform-specific implementation code for
-Android and/or iOS.
-
-For help getting started with Flutter development, view the
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
 
 ## API
 
 ### ZegoSuperBoardEngine
 
-| Method | Description|
+| API | Description|
 | ---- | :---- |
 | `init(ZegoSuperBoardInitConfig config) => Future<int>` | Before using ZegoSuperBoard SDK for functional calls, it is necessary to initialize the SDK first.   |
 | `uninit() => Future<void>`    | Uninitialize the SDK.|
