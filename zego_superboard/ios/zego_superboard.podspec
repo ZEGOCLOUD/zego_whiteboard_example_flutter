@@ -3,7 +3,7 @@
 # Run `pod lib lint zego_superwhiteboard.podspec` to validate before publishing.
 #
 Pod::Spec.new do |s|
-  s.name             = 'zego_superwhiteboard'
+  s.name             = 'zego_superboard'
   s.version          = '0.0.1'
   s.summary          = 'A new Flutter project.'
   s.description      = <<-DESC

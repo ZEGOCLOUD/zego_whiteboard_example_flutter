@@ -1,8 +1,8 @@
-#import "ZegoSuperwhiteboardPlugin.h"
-#import <zego_superwhiteboard/ZegoSuperBoardEngineMethodHandler.h>
-#import <zego_superwhiteboard/ZegoSuperBoardPlatformViewFactory.h>
+#import "ZegoSuperBoardPlugin.h"
+#import <zego_superboard/ZegoSuperBoardEngineMethodHandler.h>
+#import <zego_superboard/ZegoSuperBoardPlatformViewFactory.h>
 
-@interface ZegoSuperwhiteboardPlugin ()<FlutterStreamHandler>
+@interface ZegoSuperBoardPlugin ()<FlutterStreamHandler>
 
 @property (nonatomic, strong) id<FlutterPluginRegistrar> registrar;
 @property (nonatomic, strong) FlutterEventSink eventSink;
@@ -12,10 +12,10 @@
 
 @end
 
-@implementation ZegoSuperwhiteboardPlugin
+@implementation ZegoSuperBoardPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
     
-    ZegoSuperwhiteboardPlugin* instance = [[ZegoSuperwhiteboardPlugin alloc] init];
+    ZegoSuperBoardPlugin* instance = [[ZegoSuperBoardPlugin alloc] init];
     instance.registrar = registrar;
     
     FlutterMethodChannel* channel = [FlutterMethodChannel
