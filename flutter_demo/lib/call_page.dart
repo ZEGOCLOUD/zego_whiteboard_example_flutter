@@ -2,11 +2,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:zego_express_engine/zego_express_engine.dart';
-import 'package:zego_sdk_quick_start/whiteboard_widget.dart';
-import 'package:zego_superwhiteboard/zego_superwhiteboard.dart';
+import 'package:zego_superboard/zego_superboard.dart';
 
 import 'zegocloud_token.dart';
 import 'constants.dart';
+import 'superboard_widget.dart';
 
 class CallPage extends StatefulWidget {
   const CallPage(
@@ -116,7 +116,7 @@ class _CallPageState extends State<CallPage> {
         child: ValueListenableBuilder<bool>(
           valueListenable: isWhiteboardReadyNotifier,
           builder: (context, isWhiteboardReady, _) {
-            return isWhiteboardReady ? const WhiteboardWidget() : Container();
+            return isWhiteboardReady ? const SuperBoardWidget() : Container();
           },
         ),
       ),
@@ -231,11 +231,13 @@ class _CallPageState extends State<CallPage> {
         startPreview();
         startPublish();
 
-        ZegoSuperBoardEngine.instance.init(ZegoSuperBoardInitConfig(
+        ZegoSuperBoardEngine.instance
+            .init(ZegoSuperBoardInitConfig(
           appID: appID,
           appSign: appSign,
           userID: user.userID,
-        )).then((value) {
+        ))
+            .then((value) {
           isWhiteboardReadyNotifier.value = true;
         });
       } else {

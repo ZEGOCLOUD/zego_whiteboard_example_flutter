@@ -38,7 +38,8 @@ class ZegoTokenUtils {
     final iv = encrypt.IV.fromUtf8(ivStr);
 
     final key = encrypt.Key.fromUtf8(serverSecret);
-    final encrypter = encrypt.Encrypter(encrypt.AES(key, mode: encrypt.AESMode.cbc));
+    final encrypter =
+        encrypt.Encrypter(encrypt.AES(key, mode: encrypt.AESMode.cbc));
     final encrypted = encrypter.encrypt(tokenJson, iv: iv);
 
     final bytes1 = createUint8ListFromInt(tokenInfo.expire);
@@ -53,7 +54,8 @@ class ZegoTokenUtils {
   }
 
   static final _random = math.Random();
-  static const _defaultPool = 'ModuleSymbhasOwnPr-0123456789ABCDEFGHNRVfgctiUvz_KqYTJkLxpZXIjQW';
+  static const _defaultPool =
+      'ModuleSymbhasOwnPr-0123456789ABCDEFGHNRVfgctiUvz_KqYTJkLxpZXIjQW';
 
   static String createRandomString(int size, {String pool = _defaultPool}) {
     final len = pool.length;

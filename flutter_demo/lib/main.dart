@@ -9,8 +9,6 @@ import 'constants.dart';
 import 'permission.dart';
 import 'call_page.dart';
 
-import 'package:zego_superwhiteboard/zego_superwhiteboard.dart';
-
 void main() async {
   await createEngine();
 
