@@ -119,13 +119,6 @@ class ZegoSuperBoardSubViewModel {
     this.whiteboardIDList = const [],
   });
 
-  @override
-  String toString() {
-    return '[ZegoSuperBoardSubViewModel] name:$name, '
-        'fileID:$fileID, fileType:$fileType, uniqueID:$uniqueID, '
-        'whiteboardIDList:$whiteboardIDList';
-  }
-
   static ZegoSuperBoardSubViewModel fromMap(Map<dynamic, dynamic> params) {
     final model = ZegoSuperBoardSubViewModel();
     model.name = params['name'] ?? '';
@@ -135,15 +128,15 @@ class ZegoSuperBoardSubViewModel {
         ZegoSuperBoardFileTypeExtension.valueMap[params['fileType'] as int] ??
             ZegoSuperBoardFileType.unknown;
     model.uniqueID = params['uniqueID'] ?? '';
-    if (Platform.isIOS) {
-      model.whiteboardIDList = (params['whiteboardIDList'] as List<dynamic>)
-          .map((e) => (e as int).toString())
-          .toList();
-    } else {
+    // if (Platform.isIOS) {
+    //   model.whiteboardIDList = (params['whiteboardIDList'] as List<dynamic>)
+    //       .map((e) => (e as int).toString())
+    //       .toList();
+    // } else {
       model.whiteboardIDList = (params['whiteboardIDList'] as List<dynamic>)
           .map((e) => e as String)
           .toList();
-    }
+    // }
     return model;
   }
 

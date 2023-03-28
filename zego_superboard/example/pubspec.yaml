@@ -6,7 +6,7 @@ description: Demonstrates how to use the zego_superwhiteboard plugin.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 environment:
-  sdk: '>=2.18.6 <3.0.0'
+  sdk: '>=2.16.0 <3.0.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -18,7 +18,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  zego_superwhiteboard:
+  zego_superboard:
     # When depending on this package from a real application you should use:
     #   zego_superwhiteboard: ^x.y.z
     # See https://dart.dev/tools/pub/dependencies#version-constraints
@@ -39,7 +39,11 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^2.0.0
+  flutter_lints: ^1.0.0
+  zego_express_engine: # ^3.2.1
+    git:
+      url: git@github.com:zegoim/zego-express-flutter-sdk.git
+      ref: customer/whiteboard
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

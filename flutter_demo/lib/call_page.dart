@@ -10,7 +10,7 @@ import 'superboard_widget.dart';
 
 class CallPage extends StatefulWidget {
   const CallPage(
-      {super.key,
+      {key,
       required this.localUserID,
       required this.localUserName,
       required this.roomID});
@@ -65,7 +65,8 @@ class _CallPageState extends State<CallPage> {
       body: LayoutBuilder(
         builder: (context, constraints) {
           final videoViewWidth = constraints.maxWidth / 2 - 10;
-          final videoViewHeight = 16.0 / 9 * videoViewWidth;
+          final videoViewHeight = 9.0 / 16 * videoViewWidth;
+
           final whiteboardWidth = constraints.maxWidth / 2 - 10;
           final whiteboardHeight = constraints.maxHeight - videoViewHeight - 20;
 
@@ -111,7 +112,7 @@ class _CallPageState extends State<CallPage> {
       top: 5,
       left: 5,
       right: 5,
-      child: SizedBox(
+      child: Container(
         width: width,
         height: height,
         child: ValueListenableBuilder<bool>(
@@ -152,7 +153,7 @@ class _CallPageState extends State<CallPage> {
                         .enableCamera(cameraStateNotifier.value);
                   },
                   icon: Icon(
-                    isCameraEnabled ? Icons.camera_alt : Icons.cancel,
+                    isCameraEnabled == true ? Icons.camera_alt : Icons.cancel,
                     color: Colors.white,
                   ),
                 );
@@ -221,30 +222,35 @@ class _CallPageState extends State<CallPage> {
       roomConfig.token =
           ZegoTokenUtils.generateToken(appID, serverSecret, widget.localUserID);
     }
+
+    ZegoSuperBoardEngine.instance
+        .init(ZegoSuperBoardInitConfig(
+      appID: appID,
+      appSign: appSign,
+      userID: user.userID,
+      token: ZegoTokenUtils.generateToken(appID, serverSecret, user.userID),
+    ))
+        .then((value) {
+
+        ZegoExpressEngine.instance
+            .loginRoom(roomID, user, config: roomConfig)
+            .then((ZegoRoomLoginResult loginRoomResult) {
+          debugPrint(
+              'loginRoom: errorCode:${loginRoomResult.errorCode}, extendedData:${loginRoomResult.extendedData}');
+          isWhiteboardReadyNotifier.value = true;
+          if (loginRoomResult.errorCode == 0) {
+            startPreview();
+            startPublish();
+          } else {
+            // Login room failed
+          }
+        });
+    });
+
+
     // log in to a room
     // Users must log in to the same room to call each other.
-    ZegoExpressEngine.instance
-        .loginRoom(roomID, user, config: roomConfig)
-        .then((ZegoRoomLoginResult loginRoomResult) {
-      debugPrint(
-          'loginRoom: errorCode:${loginRoomResult.errorCode}, extendedData:${loginRoomResult.extendedData}');
-      if (loginRoomResult.errorCode == 0) {
-        startPreview();
-        startPublish();
 
-        ZegoSuperBoardEngine.instance
-            .init(ZegoSuperBoardInitConfig(
-          appID: appID,
-          appSign: appSign,
-          userID: user.userID,
-        ))
-            .then((value) {
-          isWhiteboardReadyNotifier.value = true;
-        });
-      } else {
-        // Login room failed
-      }
-    });
   }
 
   void logoutRoom() {

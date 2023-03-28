@@ -4,30 +4,44 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:zego_express_engine/zego_express_engine.dart';
+import 'package:zego_sdk_quick_start/zegocloud_token.dart';
+import 'package:zego_superboard/zego_superboard.dart';
 
 import 'constants.dart';
 import 'permission.dart';
 import 'call_page.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await createEngine();
+
+  // ZegoSuperBoardEngine.instance.uninit();
+  // ZegoSuperBoardEngine.instance
+  //     .init(ZegoSuperBoardInitConfig(
+  //   appID: appID,
+  //   appSign: appSign,
+  //   userID: "user.userID",
+  //   token: ZegoTokenUtils.generateToken(appID, serverSecret, "user.userID"),
+  // ));
 
   runApp(const MyApp());
 }
 
 Future<void> createEngine() async {
-  WidgetsFlutterBinding.ensureInitialized();
+
   // Get your AppID and AppSign from ZEGOCLOUD Console
   //[My Projects -> AppID] : https://console.zegocloud.com/project
-  ZegoExpressEngine.createEngineWithProfile(ZegoEngineProfile(
+  return ZegoExpressEngine.createEngineWithProfile(ZegoEngineProfile(
     appID,
     ZegoScenario.Default,
     appSign: kIsWeb ? null : appSign,
+    enablePlatformView: true
   ));
+
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({key});
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +81,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final buttonStyle = ElevatedButton.styleFrom(
       fixedSize: const Size(120, 60),
-      backgroundColor: const Color(0xff2C2F3E).withOpacity(0.6),
+      // backgroundColor: const Color(0xff2C2F3E).withOpacity(0.6),
     );
 
     return Scaffold(
