@@ -59,6 +59,8 @@
     
     [[ZegoSuperBoardManager sharedInstance]setDelegate:[ZegoSuperBoardEngineEventHandler sharedInstance]];
     
+    [[ZegoSuperBoardManager sharedInstance].superBoardView setDelegate:[ZegoSuperBoardEngineEventHandler sharedInstance]];
+    
     NSDictionary *arguments = call.arguments;
     NSDictionary *configDic = arguments[@"config"];
     long appID = [configDic[@"appID"]longValue];
@@ -440,7 +442,6 @@
 
     return [UIColor colorWithRed:((float) r / 255.0f) green:((float) g / 255.0f) blue:((float) b / 255.0f) alpha:1.0f];
 }
-
 
 - (NSString *)hexadecimalFromUIColor:(UIColor*)color {
     const CGFloat *components = CGColorGetComponents(color.CGColor);

@@ -109,6 +109,7 @@ public class ZegoSuperBoardMethodHandler {
                 map.put("errorCode", errorCode);
 
                 ZegoSuperBoardManager.getInstance().setManagerListener(ZegoSuperBoardEventHandler.getInstance().managerListener);
+                ZegoSuperBoardManager.getInstance().getSuperBoardView().setBoardViewListener(ZegoSuperBoardEventHandler.getInstance().viewListener);
 
                 result.success(map);
             }

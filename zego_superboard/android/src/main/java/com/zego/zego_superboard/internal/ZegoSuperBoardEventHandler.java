@@ -39,7 +39,6 @@ import im.zego.superboard.callback.IZegoSuperBoardQueryListCallback;
 import im.zego.superboard.callback.IZegoSuperBoardSwitchCallback;
 import im.zego.superboard.callback.IZegoSuperBoardViewListener;
 import im.zego.superboard.callback.IZegoSuperBoardUploadFileListener;
-
 public class ZegoSuperBoardEventHandler {
 
     private volatile static ZegoSuperBoardEventHandler instance;
@@ -115,10 +114,10 @@ public class ZegoSuperBoardEventHandler {
 
             HashMap<String, Object> map = new HashMap<>();
 
-            map.put("method", "onScrollChange");
-            map.put("currentPage", currentPage);
+            map.put("method", "onSuperBoardSubViewScrollChanged");
+            map.put("page", currentPage);
             map.put("pageCount", pageCount);
-            map.put("subViewModel", ZegoUtils.mapFromSubViewModel(subViewModel));
+            map.put("uniqueID", subViewModel.uniqueID);
 
             sink.success(map);
         }
@@ -133,7 +132,7 @@ public class ZegoSuperBoardEventHandler {
 
             map.put("method", "onSizeChange");
             map.put("visibleSize", ZegoUtils.mapFromSize(visibleSize));
-            map.put("subViewModel", ZegoUtils.mapFromSubViewModel(subViewModel));
+            map.put("uniqueID", subViewModel.uniqueID);
 
             sink.success(map);
         }
@@ -224,6 +223,4 @@ public class ZegoSuperBoardEventHandler {
             sink.success(map);
         }
     };
-
-
 }

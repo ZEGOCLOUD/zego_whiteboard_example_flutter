@@ -13,17 +13,6 @@ import 'call_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await createEngine();
-
-  // ZegoSuperBoardEngine.instance.uninit();
-  // ZegoSuperBoardEngine.instance
-  //     .init(ZegoSuperBoardInitConfig(
-  //   appID: appID,
-  //   appSign: appSign,
-  //   userID: "user.userID",
-  //   token: ZegoTokenUtils.generateToken(appID, serverSecret, "user.userID"),
-  // ));
-
   runApp(const MyApp());
 }
 
@@ -111,12 +100,17 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             ElevatedButton(
               style: buttonStyle,
               child: const Text('Call Page'),
-              onPressed: () => jumpToCallPage(
-                context,
-                localUserID: userIDTextCtrl.text,
-                roomID: roomTextCtrl.text,
-                localUserName: userNameTextCtrl.text,
-              ),
+              onPressed: () {
+
+                 createEngine().then((value) {
+                   jumpToCallPage(
+                     context,
+                     localUserID: userIDTextCtrl.text,
+                     roomID: roomTextCtrl.text,
+                     localUserName: userNameTextCtrl.text,
+                   );
+                 });
+                },
             ),
           ],
         ),

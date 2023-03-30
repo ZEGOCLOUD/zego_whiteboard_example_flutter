@@ -13,10 +13,6 @@ dependencies:
   flutter_web_plugins:
     sdk: flutter
   plugin_platform_interface: ^2.0.2
-#  zego_express_engine: # ^3.2.1
-#    git:
-#      url: git@github.com:zegoim/zego-express-flutter-sdk.git
-#      ref: customer/whiteboard
 
 dev_dependencies:
   flutter_test:

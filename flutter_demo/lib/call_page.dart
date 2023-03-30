@@ -64,8 +64,11 @@ class _CallPageState extends State<CallPage> {
       resizeToAvoidBottomInset: false,
       body: LayoutBuilder(
         builder: (context, constraints) {
-          final videoViewWidth = constraints.maxWidth / 2 - 10;
-          final videoViewHeight = 9.0 / 16 * videoViewWidth;
+          var value = 16.0 / 9.0;
+          if (kIsWeb) { value = 9.0 / 16.0;};
+          var videoViewWidth = constraints.maxWidth / 2 - 10;
+          videoViewWidth = videoViewWidth > 300 ? 300 : videoViewWidth;
+          final videoViewHeight = value * videoViewWidth;
 
           final whiteboardWidth = constraints.maxWidth / 2 - 10;
           final whiteboardHeight = constraints.maxHeight - videoViewHeight - 20;
@@ -77,6 +80,7 @@ class _CallPageState extends State<CallPage> {
               remoteViewWidget(videoViewWidth, videoViewHeight),
               controlBar(),
             ],
+
           );
         },
       ),

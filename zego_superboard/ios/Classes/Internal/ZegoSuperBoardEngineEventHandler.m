@@ -27,7 +27,6 @@
         [params setObject:@(error) forKey:@"errorCode"];
         sink(params);
     }
-    
 }
 
 - (void)onRemoteSuperBoardGraphicAuthChanged:(NSDictionary *)authInfo {
@@ -78,6 +77,17 @@
         NSMutableDictionary *params = [NSMutableDictionary dictionary];
         [params setObject:@"onRemoteSuperBoardAuthChanged" forKey:@"method"];
         [params setObject:authInfo forKey:@"authInfo"];
+        sink(params);
+    }
+}
+
+- (void)onScrollChange:(NSInteger) currentPage pageCount:(NSInteger) pageCount subViewModel:(ZegoSuperBoardSubViewModel *) subViewModel {
+    FlutterEventSink sink = _eventSink;
+    if (sink) {
+        NSMutableDictionary *params = [NSMutableDictionary dictionary];
+        [params setObject:@"onSuperBoardSubViewScrollChanged" forKey:@"method"];
+        [params setObject:@(currentPage) forKey:@"page"];
+        [params setObject:subViewModel.uniqueID forKey:@"uniqueID"];
         sink(params);
     }
 }

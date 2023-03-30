@@ -191,8 +191,10 @@ class ZegoSuperBoardImpl {
 
   static Future<ZegoSuperBoardGetListResult>
       getSuperBoardSubViewModelList() async {
+     var result11 =
+    await _channel.invokeMethod('getSuperBoardSubViewModelList');
     final List<dynamic> result =
-        await _channel.invokeMethod('getSuperBoardSubViewModelList');
+    await _channel.invokeMethod('getSuperBoardSubViewModelList');
     return ZegoSuperBoardGetListResult(
       subViewModelList: result.map((subViewModel) {
         return ZegoSuperBoardSubViewModel.fromMap(
@@ -266,7 +268,11 @@ class ZegoSuperBoardImpl {
   }
 
   static Future<void> setBrushColor(Color color) async {
-    if (Platform.isIOS) {
+    if (kIsWeb) {
+      return await _channel.invokeMethod('setBrushColor', {
+        'color': '#${color.value.toRadixString(16).padLeft(8, '0').toUpperCase()}',
+      });
+    } else if (Platform.isIOS) {
       return await _channel.invokeMethod('setBrushColor', {
         'color': '0x${color.value.toRadixString(16).substring(2)}',
       });
@@ -280,7 +286,9 @@ class ZegoSuperBoardImpl {
 
   static Future<Color> getBrushColor() async {
     final hexValue = await _channel.invokeMethod('getBrushColor');
-    if (Platform.isIOS) {
+    if (kIsWeb) {
+      return _getColorFromHex(hexValue);
+    } else if (Platform.isIOS) {
       return Color(
           int.tryParse(hexValue as String? ?? '', radix: 16) ?? 0xFF000000);
     }
@@ -350,6 +358,7 @@ class ZegoSuperBoardImpl {
         await _channel.invokeMethod('flipToPage', {
       'targetPage': targetPage,
     });
+    print("flipToPage" + result.toString());
     return result['errorCode'];
   }
 
@@ -385,8 +394,11 @@ class ZegoSuperBoardImpl {
 
   static Future<int> setWhiteboardBackgroundColor(Color color) async {
     Map<dynamic, dynamic> result = {};
-
-    if (Platform.isIOS) {
+    if (kIsWeb) {
+      result = await _channel.invokeMethod('setWhiteboardBackgroundColor', {
+        'color': '#${color.value.toRadixString(16).padLeft(8, '0').toUpperCase()}'
+      });
+    } else if (Platform.isIOS) {
       result = await _channel.invokeMethod('setWhiteboardBackgroundColor', {
         'color': '0x${color.value.toRadixString(16).substring(2)}',
       });
@@ -409,6 +421,15 @@ class ZegoSuperBoardImpl {
   static void _unregisterEventHandler() async {
     await _streamSubscription?.cancel();
     _streamSubscription = null;
+  }
+
+  static Color _getColorFromHex(String hexColor) {
+    hexColor = hexColor.replaceAll("#", "");
+    if (hexColor.length == 6) {
+      hexColor = "FF" + hexColor;
+    }
+    int colorInt = int.parse(hexColor, radix: 16);
+    return Color(colorInt);
   }
 
   static void _eventListener(dynamic data) {
@@ -444,6 +465,12 @@ class ZegoSuperBoardImpl {
           return;
         ZegoSuperBoardEngine
             .onRemoteSuperBoardGraphicAuthChanged!(map['authInfo']);
+        break;
+      case 'onSuperBoardSubViewScrollChanged':
+        if (ZegoSuperBoardEngine.onSuperBoardSubViewScrollChanged == null)
+          return;
+        ZegoSuperBoardEngine
+            .onSuperBoardSubViewScrollChanged!(data['uniqueID'], data['page']);
         break;
       default:
         // TODO: Unknown callback

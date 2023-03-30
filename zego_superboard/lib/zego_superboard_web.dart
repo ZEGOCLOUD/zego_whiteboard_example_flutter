@@ -4,10 +4,8 @@
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:async';
 import 'dart:convert';
-import 'dart:html' as html show window;
 import 'dart:html';
 import 'dart:js';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:zego_superboard/src/impl/zego_super_board_defines_web.dart';
@@ -18,8 +16,12 @@ import 'src/zego_super_board_engine.dart';
 class ZegoSuperBoardWeb {
   /// Constructs a ZegoSuperwhiteboardWeb
   static final StreamController _evenController = StreamController();
+  static var isCustomCursorEnabled = false;
+  static var isEnableResponseScale = false;
+  static var isEnableSyncScale = false;
+  static var isRemoteCursorVisibleEnabled = false;
+
   static void registerWith(Registrar registrar) {
-    print("=====Regester web channel");
     final MethodChannel channel = MethodChannel(
       'plugins.zego.im/zego_superboard',
       const StandardMethodCodec(),
@@ -50,11 +52,10 @@ class ZegoSuperBoardWeb {
 
     switch (call.method) {
       case 'init':
-        // ZegoSuperboardFlutterEngine.setEventHandler(
-        //     allowInterop((String event, String data) {
-        //       _evenController.add({'methodName': event, 'data': data});
-        //     }));
-        // var result = await ZegoSuperboardFlutterEngine.initWithConfig();
+        ZegoSuperboardFlutterEngine.setEventHandler(
+            allowInterop((String event, String data) {
+              _evenController.add({'methodName': event, 'data': data});
+            }));
         return initWithConfig(json.encode(call.arguments["config"]));
       case 'uninit':
         return ZegoSuperboardFlutterEngine.uninit();
@@ -67,30 +68,33 @@ class ZegoSuperBoardWeb {
       case 'renewToken':
         return ZegoSuperboardFlutterEngine.renewToken(call.arguments["token"]);
       case 'enableRemoteCursorVisible':
+        ZegoSuperBoardWeb.isCustomCursorEnabled = call.arguments["visible"];
         return ZegoSuperboardFlutterEngine.enableRemoteCursorVisible(call.arguments["visible"]);
       case 'isCustomCursorEnabled':
-        return ZegoSuperboardFlutterEngine.isCustomCursorEnabled();
+        return ZegoSuperBoardWeb.isCustomCursorEnabled;
       case 'isEnableResponseScale':
-        return ZegoSuperboardFlutterEngine.isEnableResponseScale();
+        return ZegoSuperBoardWeb.isEnableResponseScale;
       case 'isEnableSyncScale':
-        return ZegoSuperboardFlutterEngine.isEnableSyncScale();
+        return ZegoSuperBoardWeb.isEnableSyncScale;
       case 'isRemoteCursorVisibleEnabled':
-        return ZegoSuperboardFlutterEngine.isRemoteCursorVisibleEnabled();
+        return ZegoSuperBoardWeb.isRemoteCursorVisibleEnabled;
       case 'setCustomizedConfig':
-        return ZegoSuperboardFlutterEngine.setCustomizedConfig(call.arguments);
+        return ZegoSuperboardFlutterEngine.setCustomizedConfig(json.encode(call.arguments));
       case 'createWhiteboardView':
         return createWhiteboardView(json.encode(call.arguments["config"]));
       case 'createFileView':
         return createFileView(call.arguments["config"]["fileID"]);
       case 'destroySuperBoardSubView':
-        return ZegoSuperboardFlutterEngine.destroySuperBoardSubView(call.arguments["uniqueID"]);
+        return destroySuperBoardSubView(call.arguments["uniqueID"]);
       case 'querySuperBoardSubViewList':
         return querySuperBoardSubViewList();
       case 'getSuperBoardSubViewModelList':
         return getSuperBoardSubViewModelList();
       case 'enableSyncScale':
+        ZegoSuperBoardWeb.isEnableSyncScale = call.arguments["enable"];
         return ZegoSuperboardFlutterEngine.enableSyncScale(call.arguments["enable"]);
       case 'enableResponseScale':
+        ZegoSuperBoardWeb.isEnableResponseScale = call.arguments["enable"];
         return ZegoSuperboardFlutterEngine.enableResponseScale(call.arguments["enable"]);
       case 'setToolType':
         return ZegoSuperboardFlutterEngine.setToolType(call.arguments["tool"]);
@@ -119,11 +123,15 @@ class ZegoSuperBoardWeb {
       case 'switchSuperBoardSubView':
         return switchSuperBoardSubView(call.arguments["uniqueID"]);
       case 'getThumbnailUrlList':
-        return ZegoSuperboardFlutterEngine.getThumbnailUrlList();
+        return getThumbnailUrlList();
+      case 'getModel':
+        final result = ZegoSuperboardFlutterEngine.getModel();
+        Map<dynamic, dynamic> myMap = json.decode(result);
+        return myMap;
       case 'inputText':
         return ZegoSuperboardFlutterEngine.inputText();
       case 'addText':
-        return ZegoSuperboardFlutterEngine.addText(call.arguments);
+        return addText(json.encode(call.arguments));
       case 'undo':
         return ZegoSuperboardFlutterEngine.undo();
       case 'redo':
@@ -135,21 +143,34 @@ class ZegoSuperBoardWeb {
       case 'setOperationMode':
         return ZegoSuperboardFlutterEngine.setOperationMode(call.arguments["mode"]);
       case 'flipToPage':
-        return ZegoSuperboardFlutterEngine.flipToPage(call.arguments["targetPage"]);
+        final result = ZegoSuperboardFlutterEngine.flipToPage(call.arguments["targetPage"]);
+        final errorCode = result ? 0 : 1;
+        return {"errorCode": errorCode};
       case 'flipToPrePage':
-        return ZegoSuperboardFlutterEngine.flipToPrePage();
+        final result = ZegoSuperboardFlutterEngine.flipToPrePage();
+        final errorCode = result ? 0 : 1;
+        return {"errorCode": errorCode};
       case 'flipToNextPage':
-        return ZegoSuperboardFlutterEngine.flipToNextPage();
+        final result = ZegoSuperboardFlutterEngine.flipToNextPage();
+        final errorCode = result ? 0 : 1;
+        return {"errorCode": errorCode};
       case 'getCurrentPage':
         return ZegoSuperboardFlutterEngine.getCurrentPage();
       case 'getPageCount':
         return ZegoSuperboardFlutterEngine.getPageCount();
       case 'getVisibleSize':
-        return ZegoSuperboardFlutterEngine.getVisibleSize();
+        final result = ZegoSuperboardFlutterEngine.getVisibleSize();
+        print("getVisibleSize:" + result.toString());
+        Map<dynamic, dynamic> myMap = json.decode(result);
+        return myMap;
       case 'clearSelected':
-        return ZegoSuperboardFlutterEngine.clearSelected();
+        ZegoSuperboardFlutterEngine.clearSelected();
+        return {"errorCode": 0};
       case 'setWhiteboardBackgroundColor':
-        return ZegoSuperboardFlutterEngine.setWhiteboardBackgroundColor(call.arguments["color"]);
+        final result = ZegoSuperboardFlutterEngine.setWhiteboardBackgroundColor(call.arguments["color"]);
+        print("setWhiteboardBackgroundColor" + result.toString());
+        final errorCode = result ? 0 : -1;
+        return {"errorCode": errorCode};
       default:
         break;
     }
@@ -158,12 +179,11 @@ class ZegoSuperBoardWeb {
   Future<Map<dynamic, dynamic>> initWithConfig(String config) async {
     var result;
     result = await (() {
-      Map completerMap = createCompleter();
+      Map completerMap = _createCompleter();
       ZegoSuperboardFlutterEngine.initWithConfig(config, completerMap["success"], completerMap["fail"]);
       return completerMap["completer"].future;
     })();
 
-    print("+++++++++ Call Web init Method:" + config);
     Map<dynamic, dynamic> myMap = json.decode(result);
     return Future.value(myMap);
   }
@@ -171,11 +191,10 @@ class ZegoSuperBoardWeb {
   Future<Map<dynamic, dynamic>> createWhiteboardView(String config) async {
     var result;
     result = await (() {
-      Map completerMap = createCompleter();
+      Map completerMap = _createCompleter();
       ZegoSuperboardFlutterEngine.createWhiteboardView(config, completerMap["success"], completerMap["fail"]);
       return completerMap["completer"].future;
     })();
-    print("+++++++++ createWhiteboardView:" + result);
     Map<dynamic, dynamic> myMap = json.decode(result);
     return Future.value(myMap);
   }
@@ -183,11 +202,10 @@ class ZegoSuperBoardWeb {
   Future<Map<dynamic, dynamic>> createFileView(String fileID) async {
     var result;
     result = await (() {
-      Map completerMap = createCompleter();
+      Map completerMap = _createCompleter();
       ZegoSuperboardFlutterEngine.createFileView(fileID, completerMap["success"], completerMap["fail"]);
       return completerMap["completer"].future;
     })();
-    print("+++++++++ createFileView:" + result);
     Map<dynamic, dynamic> myMap = json.decode(result);
     return Future.value(myMap);
   }
@@ -195,40 +213,71 @@ class ZegoSuperBoardWeb {
   Future<Map<dynamic, dynamic>> querySuperBoardSubViewList() async {
     var result;
     result = await (() {
-      Map completerMap = createCompleter();
+      Map completerMap = _createCompleter();
       ZegoSuperboardFlutterEngine.querySuperBoardSubViewList(completerMap["success"], completerMap["fail"]);
       return completerMap["completer"].future;
     })();
-    print("+++++++++ querySuperBoardSubViewList:" + result);
     Map<dynamic, dynamic> myMap = json.decode(result);
     return Future.value(myMap);
   }
 
-  Future<Map<dynamic, dynamic>> getSuperBoardSubViewModelList() async {
+  Future<List<dynamic>> getSuperBoardSubViewModelList() async {
     var result;
     result = await (() {
-      Map completerMap = createCompleter();
+      Map completerMap = _createCompleter();
       ZegoSuperboardFlutterEngine.querySuperBoardSubViewList(completerMap["success"], completerMap["fail"]);
       return completerMap["completer"].future;
     })();
-    print("+++++++++ getSuperBoardSubViewModelList:" + result);
     Map<dynamic, dynamic> myMap = json.decode(result);
-    return Future.value(myMap);
+    return Future.value(myMap["subViewModelList"]);
+  }
+
+  Future<Map<dynamic, dynamic>> destroySuperBoardSubView(String uniqueID) async {
+    var result;
+    result = await (() {
+      Map completerMap = _createCompleter();
+      ZegoSuperboardFlutterEngine.destroySuperBoardSubView(uniqueID, completerMap["success"], completerMap["fail"]);
+      return completerMap["completer"].future;
+    })();
+    if (result == null || !(result is Map)) return {"errorCode": -1};
+    return Future.value(result);
   }
 
   Future<Map<dynamic, dynamic>> switchSuperBoardSubView(String uniqueID) async {
     var result;
     result = await (() {
-      Map completerMap = createCompleter();
+      Map completerMap = _createCompleter();
       ZegoSuperboardFlutterEngine.switchSuperBoardSubView(uniqueID, completerMap["success"], completerMap["fail"]);
       return completerMap["completer"].future;
     })();
-    print("+++++++++ getSuperBoardSubViewModelList:" + result);
-    Map<dynamic, dynamic> myMap = json.decode(result);
-    return Future.value(myMap);
+    if (result == null || !(result is Map)) return {"errorCode": -1};
+    return Future.value(result);
   }
 
-  static createCompleter() {
+  Future<List> getThumbnailUrlList() async {
+    var result;
+    result = await (() {
+      Map completerMap = _createCompleter();
+      ZegoSuperboardFlutterEngine.getThumbnailUrlList(completerMap["success"], completerMap["fail"]);
+      return completerMap["completer"].future;
+    })();
+    if (result == null || !(result is List)) return [];
+    return Future.value(result as FutureOr<List>?);
+  }
+
+  Future<Map<dynamic, dynamic>> addText(String config) async {
+
+    var result;
+    result = await (() {
+      Map completerMap = _createCompleter();
+      ZegoSuperboardFlutterEngine.addText(config, completerMap["success"], completerMap["fail"]);
+      return completerMap["completer"].future;
+    })();
+    if (result == null || !(result is Map)) return {"errorCode": -1};
+    return Future.value(result);
+  }
+
+  static _createCompleter() {
     Completer completer = Completer();
     return {
       'completer': completer,
@@ -252,14 +301,16 @@ class ZegoSuperBoardWeb {
         break;
       case 'onRemoteSuperBoardSubViewAdded':
         if (ZegoSuperBoardEngine.onRemoteSuperBoardSubViewAdded == null) return;
+        Map<String, dynamic> jsonMap = jsonDecode(data['subViewModel']);
         ZegoSuperBoardEngine
-            .onRemoteSuperBoardSubViewAdded!(data['subViewModel']);
+            .onRemoteSuperBoardSubViewAdded!(jsonMap);
         break;
       case 'onRemoteSuperBoardSubViewRemoved':
         if (ZegoSuperBoardEngine.onRemoteSuperBoardSubViewRemoved == null)
           return;
+        Map<String, dynamic> jsonMap = jsonDecode(data['subViewModel']);
         ZegoSuperBoardEngine
-            .onRemoteSuperBoardSubViewRemoved!(data['subViewModel']);
+            .onRemoteSuperBoardSubViewRemoved!(jsonMap);
         break;
       case 'onRemoteSuperBoardSubViewSwitched':
         if (ZegoSuperBoardEngine.onRemoteSuperBoardSubViewSwitched == null)
@@ -276,6 +327,18 @@ class ZegoSuperBoardWeb {
           return;
         ZegoSuperBoardEngine
             .onRemoteSuperBoardGraphicAuthChanged!(data['authInfo']);
+        break;
+      case 'onSuperBoardSubViewScrollChanged':
+        if (ZegoSuperBoardEngine.onSuperBoardSubViewScrollChanged == null)
+          return;
+        ZegoSuperBoardEngine
+            .onSuperBoardSubViewScrollChanged!(data['uniqueID'], data['page']);
+        break;
+      case 'onSuperBoardSubViewScaleChanged':
+        if (ZegoSuperBoardEngine.onSuperBoardSubViewScaleChanged == null)
+          return;
+        ZegoSuperBoardEngine
+            .onSuperBoardSubViewScaleChanged!(data['uniqueID'], data['authscaleInfo']);
         break;
       default:
       // TODO: Unknown callback

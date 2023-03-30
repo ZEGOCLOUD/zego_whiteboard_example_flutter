@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 
@@ -128,15 +129,19 @@ class ZegoSuperBoardSubViewModel {
         ZegoSuperBoardFileTypeExtension.valueMap[params['fileType'] as int] ??
             ZegoSuperBoardFileType.unknown;
     model.uniqueID = params['uniqueID'] ?? '';
-    // if (Platform.isIOS) {
-    //   model.whiteboardIDList = (params['whiteboardIDList'] as List<dynamic>)
-    //       .map((e) => (e as int).toString())
-    //       .toList();
-    // } else {
+    if (kIsWeb) {
       model.whiteboardIDList = (params['whiteboardIDList'] as List<dynamic>)
           .map((e) => e as String)
           .toList();
-    // }
+    } else if (Platform.isIOS) {
+      model.whiteboardIDList = (params['whiteboardIDList'] as List<dynamic>)
+          .map((e) => (e as int).toString())
+          .toList();
+    } else {
+      model.whiteboardIDList = (params['whiteboardIDList'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList();
+    }
     return model;
   }
 

@@ -11,7 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ZegoSuperBoardEngineEventHandler : NSObject<ZegoSuperBoardManagerDelegate>
+@interface ZegoSuperBoardEngineEventHandler : NSObject<ZegoSuperBoardManagerDelegate, ZegoSuperBoardViewDelegate>
 
 + (instancetype)sharedInstance;
 

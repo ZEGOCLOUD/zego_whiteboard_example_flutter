@@ -141,14 +141,13 @@ class ZegoSuperBoardEngine with ZegoSuperBoardView, ZegoSuperBoardSubView {
     return await ZegoSuperBoardImpl.getBrushColor();
   }
 
+
   static void Function(int errorCode)? onError;
-  static void Function(Map<dynamic, dynamic> subViewModel)?
-      onRemoteSuperBoardSubViewAdded;
-  static void Function(Map<dynamic, dynamic> subViewModel)?
-      onRemoteSuperBoardSubViewRemoved;
+  static void Function(Map<dynamic, dynamic> subViewModel)? onRemoteSuperBoardSubViewAdded;
+  static void Function(Map<dynamic, dynamic> subViewModel)? onRemoteSuperBoardSubViewRemoved;
   static void Function(String uniqueID)? onRemoteSuperBoardSubViewSwitched;
-  static void Function(Map<String, int> authInfo)?
-      onRemoteSuperBoardAuthChanged;
-  static void Function(Map<String, int> authInfo)?
-      onRemoteSuperBoardGraphicAuthChanged;
+  static void Function(Map<String, int> authInfo)? onRemoteSuperBoardAuthChanged;
+  static void Function(Map<String, int> authInfo)? onRemoteSuperBoardGraphicAuthChanged;
+  static void Function(String uniqueID, int page)? onSuperBoardSubViewScrollChanged;
+  static void Function(String uniqueID, double scale)? onSuperBoardSubViewScaleChanged;
 }

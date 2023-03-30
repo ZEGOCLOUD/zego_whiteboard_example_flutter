@@ -12,14 +12,10 @@ class ZegoSuperboardFlutterEngine {
   external static clear();
   external static renewToken(String token);
   external static enableRemoteCursorVisible(bool enable);
-  external static isCustomCursorEnabled();
-  external static isEnableResponseScale();
-  external static isEnableSyncScale();
-  external static isRemoteCursorVisibleEnabled();
   external static setCustomizedConfig(dynamic config);
   external static createWhiteboardView(dynamic config, dynamic success, dynamic fail);
   external static createFileView(String fileID, dynamic success, dynamic fail);
-  external static destroySuperBoardSubView(String uniqueID);
+  external static destroySuperBoardSubView(String uniqueID, dynamic success, dynamic fail);
   external static querySuperBoardSubViewList(dynamic success, dynamic fail);
   external static getSuperBoardSubViewModelList(dynamic success, dynamic fail);
   external static enableSyncScale(bool enable);
@@ -37,10 +33,10 @@ class ZegoSuperboardFlutterEngine {
   external static getBrushSize();
   external static getBrushColor();
   external static switchSuperBoardSubView(String uniqueID, dynamic success, dynamic fail);
-  external static getThumbnailUrlList();
+  external static getThumbnailUrlList(dynamic success, dynamic fail);
   external static getModel();
   external static inputText();
-  external static addText(dynamic config);
+  external static addText(dynamic config, dynamic success, dynamic fail);
   external static undo();
   external static redo();
   external static clearCurrentPage();
@@ -54,4 +50,5 @@ class ZegoSuperboardFlutterEngine {
   external static getVisibleSize();
   external static clearSelected();
   external static setWhiteboardBackgroundColor(String color);
+  external static reloadView();
 }

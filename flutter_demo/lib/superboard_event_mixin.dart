@@ -14,6 +14,10 @@ mixin SuperBoardEventMixin {
         onRemoteSuperBoardAuthChanged;
     ZegoSuperBoardEngine.onRemoteSuperBoardGraphicAuthChanged =
         onRemoteSuperBoardGraphicAuthChanged;
+    ZegoSuperBoardEngine.onSuperBoardSubViewScrollChanged =
+        onSuperBoardSubViewScrollChanged;
+    ZegoSuperBoardEngine.onSuperBoardSubViewScaleChanged =
+        onSuperBoardSubViewScaleChanged;
   }
 
   void uninitEventHandler() {
@@ -23,6 +27,8 @@ mixin SuperBoardEventMixin {
     ZegoSuperBoardEngine.onRemoteSuperBoardSubViewSwitched = null;
     ZegoSuperBoardEngine.onRemoteSuperBoardAuthChanged = null;
     ZegoSuperBoardEngine.onRemoteSuperBoardGraphicAuthChanged = null;
+    ZegoSuperBoardEngine.onSuperBoardSubViewScrollChanged = null;
+    ZegoSuperBoardEngine.onSuperBoardSubViewScaleChanged = null;
   }
 
   void onError(int errorCode) {}
@@ -36,4 +42,8 @@ mixin SuperBoardEventMixin {
   void onRemoteSuperBoardAuthChanged(Map<String, int> authInfo) {}
 
   void onRemoteSuperBoardGraphicAuthChanged(Map<String, int> authInfo) {}
+
+  void onSuperBoardSubViewScrollChanged(String uniqueID, int page) {}
+
+  void onSuperBoardSubViewScaleChanged(String uniqueID, double scale) {}
 }

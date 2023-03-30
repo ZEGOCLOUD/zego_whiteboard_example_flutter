@@ -1,3 +1,6 @@
+import 'dart:io' as io;
+import 'package:flutter/foundation.dart';
+
 import 'zego_super_board_defines.dart';
 
 extension ZegoSuperBoardToolExtension on ZegoSuperBoardTool {
@@ -87,8 +90,18 @@ extension ZegoSuperBoardOperationModeExtension on ZegoSuperBoardOperationMode {
   int get id {
     switch (this) {
       case ZegoSuperBoardOperationMode.none:return 1;
-      case ZegoSuperBoardOperationMode.draw:return 2;
-      case ZegoSuperBoardOperationMode.scroll:return 4;
+      case ZegoSuperBoardOperationMode.scroll:
+        if(kIsWeb || io.Platform.isIOS) {
+          return 2;
+        } else {
+          return 4;
+        }
+      case ZegoSuperBoardOperationMode.draw:
+        if(kIsWeb || io.Platform.isIOS) {
+          return 4;
+        } else {
+          return 2;
+        }
       case ZegoSuperBoardOperationMode.zoom:return 8;
     }
   }
