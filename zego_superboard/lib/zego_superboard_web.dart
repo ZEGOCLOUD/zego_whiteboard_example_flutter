@@ -42,10 +42,10 @@ class ZegoSuperBoardWeb {
       _eventListener(event);
     });
 
-    var element = ScriptElement()
-      ..src = 'assets/ZegoSuperboardWebFlutterWrapper.js'
-      ..type = 'application/javascript';
-    document.body!.append(element);
+    // var element = ScriptElement()
+    //   ..src = 'assets/packages/zego_superboard/assets/ZegoSuperboardWebFlutterWrapper.js'//'assets/ZegoSuperboardWebFlutterWrapper.js'
+    //   ..type = 'application/javascript';
+    // document.body!.append(element);
   }
 
   Future<dynamic> handleMethodCall(MethodCall call) async {
