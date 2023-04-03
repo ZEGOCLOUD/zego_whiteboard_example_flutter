@@ -24,3 +24,4 @@ class ZegoSuperBoardPlatformViewImpl {
     return null;
   }
 }
+

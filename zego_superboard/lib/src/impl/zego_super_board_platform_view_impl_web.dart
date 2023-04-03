@@ -16,30 +16,64 @@ class ZegoSuperBoardPlatformViewImpl {
     String superboardElement = 'plugins.zego.im/zego_superboard_view';
 
     // ignore:undefined_prefixed_name
-    ui.platformViewRegistry.registerViewFactory(
-        superboardElement,
-            (int id) {
-              final html = '<div><div id="zego-superboard-view-flutter"></div></div>';
-              final element =  htmlPkg.Element.html(html);
-              final script = htmlPkg.ScriptElement()
-                ..text = 'document.getElementById("zego-superboard-view-flutter").style.height = "100%";';
-              element.firstChild?.append(script);
+    ui.platformViewRegistry.registerViewFactory(superboardElement, (int id) {
+      final html = '<div><div id="zego-superboard-view-flutter"></div></div>';
+      final element = htmlPkg.Element.html(html);
+      final script = htmlPkg.ScriptElement()
+        ..text =
+            'document.getElementById("zego-superboard-view-flutter").style.height = "100%";';
+      element.firstChild?.append(script);
 
-              final resizeObserver = js.JsObject(js.context['ResizeObserver'], [
-                js.JsFunction.withThis((_, entries, observer) {
-                  ZegoSuperboardFlutterEngine.reloadView();
-                })
-              ]);
-              resizeObserver.callMethod('observe', [element.firstChild]);
+      final resizeObserver = js.JsObject(js.context['ResizeObserver'], [
+        js.JsFunction.withThis((_, entries, observer) {
+          ZegoSuperboardFlutterEngine.reloadView();
+        })
+      ]);
+      resizeObserver.callMethod('observe', [element.firstChild]);
 
-              return element;
-            }
+      return element;
+    });
+
+    return SuperBoardWebWidget(
+      view: HtmlElementView(
+          key: key,
+          viewType: superboardElement,
+          onPlatformViewCreated: (int viewID) {
+            onViewCreated(viewID);
+          }),
     );
-    return HtmlElementView(
-        key: key,
-        viewType: superboardElement,
-        onPlatformViewCreated: (int viewID) {
-          onViewCreated(viewID);
-        });
+  }
+}
+
+class SuperBoardWebWidget extends StatefulWidget {
+  final HtmlElementView view;
+
+  const SuperBoardWebWidget({Key? key, required this.view}) : super(key: key);
+
+  @override
+  _SuperBoardWebWidgetState createState() => _SuperBoardWebWidgetState();
+}
+
+class _SuperBoardWebWidgetState extends State<SuperBoardWebWidget> {
+  final GlobalKey _widgetKey = GlobalKey();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      key: _widgetKey,
+      child: widget.view,
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final renderBox =
+          _widgetKey.currentContext?.findRenderObject() as RenderBox;
+      final position = renderBox.localToGlobal(Offset.zero);
+      ZegoSuperboardFlutterEngine.onWidgetPosition(position.dx, position.dy);
+      // js.context.callMethod('onWidgetPosition', [position.dx, position.dy]);
+    });
   }
 }

@@ -1,3 +1,5 @@
+@JS('ZegoSuperboardFlutterEngine')
+library ZegoSuperboardFlutterEngine;
 
 import 'package:js/js.dart';
 import 'dart:js_util';
@@ -51,4 +53,5 @@ class ZegoSuperboardFlutterEngine {
   external static clearSelected();
   external static setWhiteboardBackgroundColor(String color);
   external static reloadView();
+  external static onWidgetPosition(double x, double y);
 }
