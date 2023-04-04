@@ -401,6 +401,10 @@
     result(nil);
 }
 
+- (void)setScaleFactor:(FlutterMethodCall *)call result:(FlutterResult)result {
+    result(nil);
+}
+
 - (UIColor *) colorWithHexString: (NSString *)color
 {
     NSString *cString = [[color stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] uppercaseString];

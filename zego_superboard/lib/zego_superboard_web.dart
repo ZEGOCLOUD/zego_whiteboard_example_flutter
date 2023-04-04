@@ -171,6 +171,8 @@ class ZegoSuperBoardWeb {
         print("setWhiteboardBackgroundColor" + result.toString());
         final errorCode = result ? 0 : -1;
         return {"errorCode": errorCode};
+      case 'setScaleFactor':
+        return ZegoSuperboardFlutterEngine.setScaleFactor(call.arguments["scaleFactor"]);
       default:
         break;
     }

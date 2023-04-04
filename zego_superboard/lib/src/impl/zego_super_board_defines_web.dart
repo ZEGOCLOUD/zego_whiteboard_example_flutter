@@ -53,5 +53,6 @@ class ZegoSuperboardFlutterEngine {
   external static clearSelected();
   external static setWhiteboardBackgroundColor(String color);
   external static reloadView();
+  external static setScaleFactor(double scaleFactor);
   external static onWidgetPosition(double x, double y);
 }

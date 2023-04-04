@@ -572,6 +572,10 @@ public class ZegoSuperBoardMethodHandler {
         result.success(null);
     }
 
+    public static void setScaleFactor(MethodCall call, Result result) {
+        result.success(null);
+    }
+
     ////////
 
     public static ZegoSuperBoardTool getSuperBoardTool(int value) {

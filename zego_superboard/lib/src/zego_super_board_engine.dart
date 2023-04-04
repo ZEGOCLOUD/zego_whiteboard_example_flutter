@@ -141,6 +141,11 @@ class ZegoSuperBoardEngine with ZegoSuperBoardView, ZegoSuperBoardSubView {
     return await ZegoSuperBoardImpl.getBrushColor();
   }
 
+  // only support web
+  Future<void> setScaleFactor(double scaleFactor) async {
+    return await ZegoSuperBoardImpl.setScaleFactor(scaleFactor);
+  }
+
 
   static void Function(int errorCode)? onError;
   static void Function(Map<dynamic, dynamic> subViewModel)? onRemoteSuperBoardSubViewAdded;

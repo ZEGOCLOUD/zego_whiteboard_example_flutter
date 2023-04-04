@@ -31,9 +31,6 @@
     
     // Register platform view factory
     [registrar registerViewFactory:[ZegoSuperBoardPlatformViewFactory sharedInstance] withId:@"plugins.zego.im/zego_superboard_view"];
-    
-    
-    
 }
 
 - (FlutterError* _Nullable)onListenWithArguments:(id _Nullable)arguments

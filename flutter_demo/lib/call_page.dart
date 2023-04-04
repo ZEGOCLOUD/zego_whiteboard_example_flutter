@@ -258,7 +258,7 @@ class _CallPageState extends State<CallPage> {
   }
 
   void logoutRoom() {
-    ZegoExpressEngine.instance.logoutRoom();
+    ZegoExpressEngine.instance.logoutRoom(widget.roomID);
 
     ZegoSuperBoardEngine.instance.uninit();
   }

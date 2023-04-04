@@ -412,6 +412,10 @@ class ZegoSuperBoardImpl {
     return result['errorCode'];
   }
 
+  static Future<void> setScaleFactor(double scaleFactor) async {
+    return await _channel.invokeMethod('setScaleFactor', {'scaleFactor': scaleFactor});
+  }
+
   /// EventHandler
   static void _registerEventHandler() async {
     _streamSubscription =
