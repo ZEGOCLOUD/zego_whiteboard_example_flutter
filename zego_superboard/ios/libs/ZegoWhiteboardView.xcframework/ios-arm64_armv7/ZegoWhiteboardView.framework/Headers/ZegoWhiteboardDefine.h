@@ -11,8 +11,8 @@
 #ifndef ZegoWhiteboardDefine_h
 #define ZegoWhiteboardDefine_h
 
-#define ZEGO_WHITEBOARD_VIEW_VERSION @"ZegoWhiteboardView_v2.3.5.137_221219_163420_ios"
-#define ZEGO_WHITEBOARD_MATCH_VERSION @"2.3.5"
+#define ZEGO_WHITEBOARD_VIEW_VERSION @"ZegoWhiteboardView_v2.3.7.146_230406_165250_ios"
+#define ZEGO_WHITEBOARD_MATCH_VERSION @"2.3.7"
 
 /** Whiteboard ID type, which uniquely identifies a whiteboard. */
 typedef unsigned long long ZegoWhiteboardID;

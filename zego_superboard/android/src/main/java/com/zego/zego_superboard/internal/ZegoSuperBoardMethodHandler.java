@@ -576,6 +576,14 @@ public class ZegoSuperBoardMethodHandler {
         result.success(null);
     }
 
+    public static void setSuperBoardMaxScaleFactor(MethodCall call, Result result) {
+        ZegoSuperBoardManager.getInstance().setSuperBoardMaxScaleFactor(
+                ZegoUtils.floatValue((Number) call.argument("maxScaleFactor"))
+        );
+        result.success(null);
+    }
+
+
     ////////
 
     public static ZegoSuperBoardTool getSuperBoardTool(int value) {

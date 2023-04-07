@@ -59,21 +59,16 @@ class _SuperBoardWebWidgetState extends State<SuperBoardWebWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      key: _widgetKey,
-      child: widget.view,
+    return Listener(
+      onPointerDown: (_) {
+        final renderBox = _widgetKey.currentContext?.findRenderObject() as RenderBox;
+        final position = renderBox.localToGlobal(Offset.zero);
+        ZegoSuperboardFlutterEngine.onWidgetPosition(position.dx, position.dy);
+      },
+      child: Container(
+        key: _widgetKey,
+        child: widget.view,
+      ),
     );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final renderBox =
-          _widgetKey.currentContext?.findRenderObject() as RenderBox;
-      final position = renderBox.localToGlobal(Offset.zero);
-      ZegoSuperboardFlutterEngine.onWidgetPosition(position.dx, position.dy);
-      // js.context.callMethod('onWidgetPosition', [position.dx, position.dy]);
-    });
   }
 }

@@ -416,6 +416,10 @@ class ZegoSuperBoardImpl {
     return await _channel.invokeMethod('setScaleFactor', {'scaleFactor': scaleFactor});
   }
 
+  static Future<void> setSuperBoardMaxScaleFactor(double maxScaleFactor) async {
+    return await _channel.invokeMethod('setSuperBoardMaxScaleFactor', {'maxScaleFactor': maxScaleFactor});
+  }
+
   /// EventHandler
   static void _registerEventHandler() async {
     _streamSubscription =

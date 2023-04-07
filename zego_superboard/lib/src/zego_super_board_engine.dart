@@ -146,6 +146,10 @@ class ZegoSuperBoardEngine with ZegoSuperBoardView, ZegoSuperBoardSubView {
     return await ZegoSuperBoardImpl.setScaleFactor(scaleFactor);
   }
 
+  Future<void> setSuperBoardMaxScaleFactor(double maxScaleFactor) async {
+    return await ZegoSuperBoardImpl.setSuperBoardMaxScaleFactor(maxScaleFactor);
+  }
+
 
   static void Function(int errorCode)? onError;
   static void Function(Map<dynamic, dynamic> subViewModel)? onRemoteSuperBoardSubViewAdded;

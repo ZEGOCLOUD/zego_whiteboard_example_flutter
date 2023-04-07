@@ -242,7 +242,7 @@ typedef void(^ZegoSuperBoardManagerCreateBlock)(ZegoSuperBoardError errorCode, Z
 /// Note: If the enableSuperBoardView API is used and the parameter is set to false, the ZegoSuperBoardView object cannot be obtained.
 ///
 /// Supported version: 2.0.0
-@property (nonatomic, strong,readonly) ZegoSuperBoardView *superBoardView;
+@property (nonatomic, strong, readonly) ZegoSuperBoardView *superBoardView;
 
 /// Description: Use superBoardSubViewModelList to obtain the number of superBoardSubView objects in the current room and superBoardSubView information.
 ///
@@ -251,7 +251,11 @@ typedef void(^ZegoSuperBoardManagerCreateBlock)(ZegoSuperBoardError errorCode, Z
 /// Calling time/Notification time: Call this API after the ZegoSuperBoard SDK is initialized.
 ///
 /// Supported version: 2.0.0
-@property (nonatomic, strong,readonly) NSArray <ZegoSuperBoardSubViewModel *> *superBoardSubViewModelList;
+@property (nonatomic, strong, readonly) NSArray <ZegoSuperBoardSubViewModel *> *superBoardSubViewModelList;
+
+/// Set the maximum zoom factor of Super Whiteboard (files and whiteboards), which is 3x by default. The range that can be set is [1,10]
+@property (nonatomic, assign, readwrite) CGFloat superBoardMaxScaleFactor;
+
 
 /// Obtain the ZegoSuperBoardManager instance object.
 ///

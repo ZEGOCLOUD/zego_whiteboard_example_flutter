@@ -9,8 +9,8 @@
 #define ZegoSuperBoardDefine_h
 
 
-#define ZEGO_SUPERBOARD_VERSION @"ZegoSuperBoard_v2.3.5.174_221219_164637_ios"
-#define ZEGO_SUPERBOARD_MATCH_VERSION @"2.3.5"
+#define ZEGO_SUPERBOARD_VERSION @"ZegoSuperBoard_v2.3.7.184_230406_171402_ios"
+#define ZEGO_SUPERBOARD_MATCH_VERSION @"2.3.7"
 
 static NSString * _Nonnull SUPER_BOARD_REQUEST_SEQ = @"request_seq";        // Operation serial number
 static NSString * _Nonnull SUPER_BOARD_UPLOAD_PERCENT = @"upload_percent";  // Upload progress

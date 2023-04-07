@@ -20,6 +20,7 @@ class ZegoSuperBoardWeb {
   static var isEnableResponseScale = false;
   static var isEnableSyncScale = false;
   static var isRemoteCursorVisibleEnabled = false;
+  static var maxScaleFactor = 100000;
 
   static void registerWith(Registrar registrar) {
     final MethodChannel channel = MethodChannel(
@@ -33,7 +34,6 @@ class ZegoSuperBoardWeb {
         'plugins.zego.im/zego_superboard_event_handler',
         const StandardMethodCodec(),
         registrar);
-
     final pluginInstance = ZegoSuperBoardWeb();
     channel.setMethodCallHandler(pluginInstance.handleMethodCall);
     eventChannel.setController(ZegoSuperBoardWeb._evenController);
@@ -172,7 +172,15 @@ class ZegoSuperBoardWeb {
         final errorCode = result ? 0 : -1;
         return {"errorCode": errorCode};
       case 'setScaleFactor':
-        return ZegoSuperboardFlutterEngine.setScaleFactor(call.arguments["scaleFactor"]);
+        var scale = call.arguments["scaleFactor"];
+        scale = scale > ZegoSuperBoardWeb.maxScaleFactor ? ZegoSuperBoardWeb.maxScaleFactor : scale;
+        return ZegoSuperboardFlutterEngine.setScaleFactor(scale);
+      case 'setSuperBoardMaxScaleFactor':
+        final scale = call.arguments["maxScaleFactor"];
+        if (scale > 0) {
+          ZegoSuperBoardWeb.maxScaleFactor = scale;
+        }
+        return ;
       default:
         break;
     }

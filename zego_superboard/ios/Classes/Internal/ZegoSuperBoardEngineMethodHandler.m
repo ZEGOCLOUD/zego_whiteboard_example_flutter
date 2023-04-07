@@ -405,6 +405,13 @@
     result(nil);
 }
 
+- (void)setSuperBoardMaxScaleFactor:(FlutterMethodCall *)call result:(FlutterResult)result {
+    NSDictionary *arguments = call.arguments;
+    CGFloat scale = [arguments[@"maxScaleFactor"] floatValue];
+    [[ZegoSuperBoardManager sharedInstance] setSuperBoardMaxScaleFactor:scale];
+    result(nil);
+}
+
 - (UIColor *) colorWithHexString: (NSString *)color
 {
     NSString *cString = [[color stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] uppercaseString];

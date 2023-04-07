@@ -14,11 +14,11 @@
 		</data>
 		<key>Headers/ZegoWhiteboardDefine.h</key>
 		<data>
-		XXFmJSvN8S1NccEeMtDV+ffv6IU=
+		rf0ycPRFcFpg4LJp4creO0jSaNg=
 		</data>
 		<key>Headers/ZegoWhiteboardManager.h</key>
 		<data>
-		b2Wr+/h/vqj0/2fYIcBzMuRhqyo=
+		BeUeK306FSxij0cnT+732dtPOCI=
 		</data>
 		<key>Headers/ZegoWhiteboardView.h</key>
 		<data>
@@ -30,7 +30,7 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		tEEv7Kg1Z+Lw+X5jCy/sB6lepy0=
+		SG9ckFim16a9UMI4n+G/MdzKWnE=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -65,22 +65,22 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			XXFmJSvN8S1NccEeMtDV+ffv6IU=
+			rf0ycPRFcFpg4LJp4creO0jSaNg=
 			</data>
 			<key>hash2</key>
 			<data>
-			nbtwhw3qT9o+tgR1CLIxcmv1VvBFz9qlmktyt2p8Bjs=
+			+S87bgRXZh2oA6qZwRRYxCyKP/P8ImErFSRJvXangXA=
 			</data>
 		</dict>
 		<key>Headers/ZegoWhiteboardManager.h</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			b2Wr+/h/vqj0/2fYIcBzMuRhqyo=
+			BeUeK306FSxij0cnT+732dtPOCI=
 			</data>
 			<key>hash2</key>
 			<data>
-			8K2hjwKzLQZi7iJS8fCRGzkZ4xwlDW3TrVhYuRwCRiY=
+			KUcQyauHQWN4XYt5AE3Djzov7o/EtaADtgaOQxT1qqo=
 			</data>
 		</dict>
 		<key>Headers/ZegoWhiteboardView.h</key>

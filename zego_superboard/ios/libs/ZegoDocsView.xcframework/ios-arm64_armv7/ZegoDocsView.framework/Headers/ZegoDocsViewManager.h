@@ -4,6 +4,7 @@
 #import <Foundation/Foundation.h>
 #import "ZegoDocsViewConfig.h"
 #import "ZegoDocsViewConstants.h"
+#import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -63,6 +64,9 @@ typedef void(^ZegoDocsViewQueryCachedCompletionBlock)(ZegoDocsViewError errorCod
 /// DocsView SDK management class
 ///
 @interface ZegoDocsViewManager : NSObject
+
+/// Set the maximum file magnification, which is 3 times by default. The range that can be set is [1,10]
+@property (nonatomic, assign , readwrite) CGFloat docsViewMaxScaleFactor;
 
 /// Initialize the ZegoDocsView SDK.
 ///
@@ -134,6 +138,7 @@ typedef void(^ZegoDocsViewQueryCachedCompletionBlock)(ZegoDocsViewError errorCod
 ///
 //* @return Version information.
 - (NSString *)getVersion;
+
 
 /// Upload files to the ZegoDocs service.
 ///

@@ -155,6 +155,9 @@ typedef void(^ZegoWhiteboardSwitchBlock)(ZegoWhiteboardViewError errorCode, Zego
 // Indicates whether to enable the local custom cursor. The default value is YES.
 @property (nonatomic, assign, readwrite) BOOL enableRemoteCursorVisible;
 
+// Set the maximum zoom factor of the whiteboard, which is 3 times by default. The range that can be set is [1,10]
+@property (nonatomic, assign, readwrite) CGFloat whiteboardMaxScaleFactor;
+
 /// Clear the entire cache directory.
 ///
 /// Call this method when caches need to be cleared. Loaded files can be cleared.

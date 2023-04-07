@@ -22,7 +22,7 @@
 		</data>
 		<key>Headers/ZegoSuperBoardDefine.h</key>
 		<data>
-		8cBQzB+mE3wShQLgz6dnsoHMEaw=
+		dLLNz5U4wloh57nKZoftRHvs6ho=
 		</data>
 		<key>Headers/ZegoSuperBoardInitConfig.h</key>
 		<data>
@@ -38,7 +38,7 @@
 		</data>
 		<key>Headers/ZegoSuperBoardManager.h</key>
 		<data>
-		JPVIWbNk3B7IwYIjqhs4BIVc+5I=
+		LHpU0LEqEzO0qeVGKvMNKvWuD+w=
 		</data>
 		<key>Headers/ZegoSuperBoardSubView.h</key>
 		<data>
@@ -58,7 +58,7 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		OkLtZSqZxdmG7tc1M8MP4XH+7vQ=
+		Mcj9tNh0WfwBYhI8SyjFBQ/F+bo=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -115,11 +115,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			8cBQzB+mE3wShQLgz6dnsoHMEaw=
+			dLLNz5U4wloh57nKZoftRHvs6ho=
 			</data>
 			<key>hash2</key>
 			<data>
-			rJd40XHtvG9K5WV0HmlqN9MlWs8MC2WGFa+mc42Zlk8=
+			sEIabe6aS1jQveUBrOeM0ct4gYoLlC2loAkjYClS7hI=
 			</data>
 		</dict>
 		<key>Headers/ZegoSuperBoardInitConfig.h</key>
@@ -159,11 +159,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			JPVIWbNk3B7IwYIjqhs4BIVc+5I=
+			LHpU0LEqEzO0qeVGKvMNKvWuD+w=
 			</data>
 			<key>hash2</key>
 			<data>
-			j8X47IlesSYxvDwloh1acp4iRAigWdeKGZc8dgRrIXw=
+			Ss7JL/8Yxxbvw0TrjN/IqF9+ap0G6yep9DkHgTEYhJc=
 			</data>
 		</dict>
 		<key>Headers/ZegoSuperBoardSubView.h</key>
